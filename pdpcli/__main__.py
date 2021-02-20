@@ -20,7 +20,7 @@ from pdpcli.commands import main  # pylint: disable=wrong-import-position
 
 def run():
     colt.import_modules(["pdpcli"])
-    main(prog="pdpcli")
+    main(prog="pdp")
 
 
 if __name__ == "__main__":
