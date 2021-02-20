@@ -24,7 +24,7 @@ PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pa
 
 ### Basic Usage
 
-1. Write a pipeline config file `config.yml` like below:
+1. Write a pipeline config file `config.yml` like below. The `type` fields under `pipeline` correspond to the snake-cased class names of the [`PdpipelineStages`](https://pdpipe.github.io/pdpipe/doc/pdpipe/#types-of-pipeline-stages).
 
 ```yaml
 pipeline:
@@ -52,7 +52,12 @@ pipeline:
 $ pdp build config.yml pipeline.pkl --input-file train.csv
 ```
 
-3. Apply fitted pipeline to `test.csv` and output the processed file `processed_test.jsonl` via:
+3. Apply fitted pipeline to `test.csv` and output the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, processed DataFrame will be exported as the JSONL format.
 ```
 $ pdp apply pipeline.pkl test.csv --output-file processed_test.jsonl
+```
+
+4. You can also directly run the pipeline from a config file if you don't need to fit the pipeline.
+```
+$ pdp apply config.yml test.csv --output-file processed_test.jsonl
 ```
