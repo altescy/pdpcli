@@ -4,12 +4,11 @@ import inspect
 import colt
 import pandas
 import pdpipe
-import pdpipe.shared as pdps
 
 from pdpcli.util import camel_to_snake
 
 
-class PdpipelineStage(pdpipe.PdPipelineStage, colt.Registrable):
+class PdPipelineStage(pdpipe.PdPipelineStage, colt.Registrable):
     # pylint: disable=abstract-method
     pass
 
@@ -18,14 +17,14 @@ class PdpipelineStage(pdpipe.PdPipelineStage, colt.Registrable):
 for pdpname, pdpcls in inspect.getmembers(pdpipe):
     if isinstance(pdpcls, type) and issubclass(pdpcls, pdpipe.PdPipelineStage):
         name = f"{camel_to_snake(pdpname)}"
-        PdpipelineStage.register(name)(pdpcls)
+        PdPipelineStage.register(name)(pdpcls)
 
 
-@PdpipelineStage.register("pipeline", exist_ok=True)
+@PdPipelineStage.register("pipeline", exist_ok=True)
 class PdPipelineWrapper(pdpipe.PdPipeline):  # pylint: disable=too-many-ancestors
     def __init__(
         self,
-        stages: Union[List[PdpipelineStage], Dict[str, PdpipelineStage]],
+        stages: Union[List[PdPipelineStage], Dict[str, PdPipelineStage]],
         **kwargs,
     ) -> None:
         if isinstance(stages, dict):

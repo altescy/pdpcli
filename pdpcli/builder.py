@@ -4,7 +4,7 @@ import copy
 
 import colt
 
-from pdpcli.stages import PdpipelineStage
+from pdpcli.stages import PdPipelineStage
 from pdpcli.settings import DEFAULT_COLT_SETTING
 from pdpcli.data.data_reader import DataReader
 from pdpcli.data.data_writer import DataWriter
@@ -22,7 +22,7 @@ class ConfigBuilder:
 
     def __init__(
         self,
-        pipeline: PdpipelineStage,
+        pipeline: PdPipelineStage,
         reader: Optional[DataReader] = None,
         writer: Optional[DataWriter] = None,
     ) -> None:
