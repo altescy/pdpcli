@@ -1,0 +1,25 @@
+colt:
+  typekey: type
+
+reader:
+  type: csv
+
+pipeline:
+  type: pipeline
+  stages:
+    drop_columns:
+      type: col_drop
+      columns: foo
+
+    encode:
+      type: one_hot_encode
+      columns: sex
+
+    tokenize:
+      type: tokenize_text
+      columns: profile
+
+    vectorize:
+      type: tfidf_vectorize_token_lists
+      column: profile
+      min_df: 2
