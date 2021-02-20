@@ -1,0 +1,24 @@
+# build artifacts
+
+.eggs/
+pdpcli.egg-info/
+build/
+dist/
+pip-wheel-metadata/
+
+
+# python
+
+*.pyc
+*.pyo
+__pycache__
+
+
+# testing and continuous integration
+
+.mypy_cache
+.pytest_cache/
+
+# env file
+.envrc
+.venv
