@@ -3,7 +3,7 @@ import logging
 import pickle
 from pathlib import Path
 
-import pdpipe
+import pdpipe  # pylint: disable=unused-import
 
 from pdpcli.build import build_pdpipe
 from pdpcli.commands.subcommand import Subcommand

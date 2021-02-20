@@ -1,7 +1,4 @@
 import re
-from pathlib import Path
-
-from pdpcli.filetype import FileType
 
 
 def camel_to_snake(s: str) -> str:
