@@ -54,11 +54,11 @@ class ApplyCommand(Subcommand):
         self.parser.add_argument(
             "--quiet",
             action="store_true",
-            help="do not show result dataframe to stdout",
+            help="do not show result dataframe on stdout",
         )
 
     def run(self, args: argparse.Namespace) -> None:
-        logger.info("Load model from: %s", str(args.pipeline))
+        logger.info("Load pipeline from: %s", str(args.pipeline))
         pipeline = self._load_pipeline(args.pipeline, args.overrides)
 
         logger.info("Pipeline:\n%s", str(pipeline))
