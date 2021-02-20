@@ -47,7 +47,7 @@ pipeline:
       column: profile
 ```
 
-2. Build pipeline by training on `train.csv`. The following command generage a pickled pipeline file `pipeline.pkl`.
+2. Build a pipeline by training on `train.csv`. The following command generage a pickled pipeline file `pipeline.pkl` after training.
 ```
 $ pdp build config.yml pipeline.pkl --input-file train.csv
 ```
