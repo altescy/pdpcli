@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List, Union
 import inspect
 
 import colt
@@ -22,5 +22,11 @@ for pdpname, pdpcls in inspect.getmembers(pdpipe):
 
 @PdpipelineStage.register("pipeline", exist_ok=True)
 class PdPipelineWrapper(pdpipe.PdPipeline):  # pylint: disable=too-many-ancestors
-    def __init__(self, stages: List[PdpipelineStage], **kwargs) -> None:
+    def __init__(
+        self,
+        stages: Union[List[PdpipelineStage], Dict[str, PdpipelineStage]],
+        **kwargs,
+    ) -> None:
+        if isinstance(stages, dict):
+            stages = list(stages.values())
         super().__init__(stages, **kwargs)

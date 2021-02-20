@@ -5,11 +5,10 @@ from pathlib import Path
 
 import pdpipe  # pylint: disable=unused-import
 
-from pdpcli.build import build_pdpipe
+from pdpcli import util
+from pdpcli.builder import ConfigBuilder
 from pdpcli.commands.subcommand import Subcommand
-from pdpcli.configs import load_config_file
-from pdpcli.data import load_dataframe_from_file
-from pdpcli.settings import DEFAULT_COLT_SETTING
+from pdpcli.exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class BuildCommand(Subcommand):
             help="path to a configuration file",
         )
         self.parser.add_argument(
-            "model",
+            "pipeline",
             type=Path,
             help="path to a output file of a trained model",
         )
@@ -45,20 +44,30 @@ class BuildCommand(Subcommand):
         )
 
     def run(self, args: argparse.Namespace) -> None:
-        config = load_config_file(args.config, args.overrides)
+        config_reader = util.infer_config_reader(args.config)
+        if config_reader is None:
+            raise ConfigurationError("Failed to infer config reader.")
+
+        config = config_reader.read(args.config, args.overrides)
         logger.info("Configurations:  %s", str(config))
 
-        model = build_pdpipe(
-            config, **DEFAULT_COLT_SETTING)  # type: pdpipe.PdpipelineStage
-        logger.info("Build model:\n%s", str(model))
+        builder = ConfigBuilder.build(config)
+        pipeline = builder.pipeline
+
+        logger.info("Build pipeline:\n%s", str(pipeline))
 
         if args.input_file:
-            logger.info("Fit model with: %s", args.input_file)
-            df = load_dataframe_from_file(args.input_file)
-            model.fit(df)
+            reader = builder.reader or util.infer_data_reader(args.input_file)
+            if reader is None:
+                raise ConfigurationError("Failed to infer data reader.")
 
-        logger.info("Save model to: %s", args.model)
-        with open(args.model, "wb") as fp:
-            pickle.dump(model, fp)
+            df = reader.read(args.input_file)
+
+            logger.info("Fit model with: %s", args.input_file)
+            pipeline.fit(df)
+
+        logger.info("Save pipeline to: %s", args.pipeline)
+        with open(args.pipeline, "wb") as fp:
+            pickle.dump(pipeline, fp)
 
         logger.info("Done")
