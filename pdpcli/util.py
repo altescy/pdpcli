@@ -37,7 +37,7 @@ def infer_data_writer(file_path: Path) -> Optional[pdpcli.data.DataWriter]:
         return pdpcli.data.CsvDataWriter(sep="\t")
 
     if ext in (".jsonl", ):
-        return pdpcli.data.JsonDataWriter(orient="records")
+        return pdpcli.data.JsonDataWriter(orient="records", lines=True)
 
     if ext in (".pkl", ".pickle"):
         return pdpcli.data.PickleDataWriter()

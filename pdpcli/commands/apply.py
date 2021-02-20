@@ -3,15 +3,15 @@ import logging
 import pickle
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Tuple
 
 import pdpipe
 
 from pdpcli import util
 from pdpcli.builder import ConfigBuilder
+from pdpcli.data import DataReader, DataWriter
 from pdpcli.exceptions import ConfigurationError
 from pdpcli.commands.subcommand import Subcommand
-from pdpcli.filetype import FileType
 
 logger = logging.getLogger(__name__)
 
@@ -59,11 +59,19 @@ class ApplyCommand(Subcommand):
 
     def run(self, args: argparse.Namespace) -> None:
         logger.info("Load pipeline from: %s", str(args.pipeline))
-        pipeline = self._load_pipeline(args.pipeline, args.overrides)
+        if self._is_pickle_file(args.pipeline):
+            pipeline = self._load_pipeline_from_pickle(args.pipeline)
+            reader, writer = None, None
+        else:
+            pipeline, reader, writer = self._build_config(args.pipeline)
+
+        if args.config:
+            logger.info("Load data reader / writer from: %s", str(args.config))
+            _, reader, writer = self._build_config(args.config, args.overrides)
 
         logger.info("Pipeline:\n%s", str(pipeline))
 
-        reader = util.infer_data_reader(args.input_file)
+        reader = reader or util.infer_data_reader(args.input_file)
         if reader is None:
             raise ConfigurationError("Failed to infer data reader")
 
@@ -74,7 +82,7 @@ class ApplyCommand(Subcommand):
         result_df = pipeline.apply(df)
 
         if args.output_file:
-            writer = util.infer_data_writer(args.output_file)
+            writer = writer or util.infer_data_writer(args.output_file)
             if writer is None:
                 raise ConfigurationError("Failed to infer data writer.")
 
@@ -87,23 +95,32 @@ class ApplyCommand(Subcommand):
         logger.info("Done")
 
     @staticmethod
-    def _load_pipeline(
+    def _is_pickle_file(file_path: Path) -> bool:
+        ext = file_path.suffix
+        return ext in (".pkl", ".pickle")
+
+    @staticmethod
+    def _load_pipeline_from_pickle(file_path: Path) -> pdpipe.PdPipelineStage:
+        with open(file_path, "rb") as fp:
+            pipeline = pickle.load(fp)
+        return pipeline
+
+    @staticmethod
+    def _build_config(
         file_path: Path,
         overrides: List[str] = None,
-    ) -> pdpipe.PdPipelineStage:
-        filetype = FileType.from_path(file_path)
-        if filetype == FileType.PICKLE:
-            with open(file_path, "rb") as fp:
-                pipeline = pickle.load(fp)
-        else:
-            config_reader = util.infer_config_reader(file_path)
-            if config_reader is None:
-                raise ConfigurationError("Failed to infer config reader.")
+    ) -> Tuple[pdpipe.PdPipelineStage, Optional[DataReader],
+               Optional[DataWriter]]:
+        config_reader = util.infer_config_reader(file_path)
+        if config_reader is None:
+            raise ConfigurationError("Failed to infer config reader.")
 
-            config = config_reader.read(file_path, overrides)
-            logger.info("Load config: %s", str(config))
+        config = config_reader.read(file_path, overrides)
+        logger.info("Load config: %s", str(config))
 
-            builder = ConfigBuilder.build(config)
-            pipeline = builder.pipeline
+        builder = ConfigBuilder.build(config)
+        pipeline = builder.pipeline
+        reader = builder.reader
+        writer = builder.writer
 
-        return pipeline
+        return pipeline, reader, writer

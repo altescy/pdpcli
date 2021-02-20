@@ -4,6 +4,7 @@ import inspect
 import colt
 import pandas
 import pdpipe
+import pdpipe.shared as pdps
 
 from pdpcli.util import camel_to_snake
 
