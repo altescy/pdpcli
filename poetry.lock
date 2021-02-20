@@ -56,8 +56,8 @@ category = "main"
 description = "A configuration utility for Python object."
 name = "colt"
 optional = false
-python-versions = ">=3.7.3"
-version = "0.5.0"
+python-versions = ">=3.8,<4.0"
+version = "0.6.1"
 
 [[package]]
 category = "main"
@@ -543,7 +543,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "6c8144cb5b1ebdd84b069a7256001efe6616f95c26ba7be82a08b92f69ce2f7e"
+content-hash = "5afd767a9df4ac4f2142dfa3c9f9809e908fdbba5966bc13198cccb69336df4b"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -569,8 +569,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 colt = [
-    {file = "colt-0.5.0-py3-none-any.whl", hash = "sha256:3827d52ad9f809b0b6769f2a96810ac4f670489100a713636a1f3bb9231a5890"},
-    {file = "colt-0.5.0.tar.gz", hash = "sha256:76cb490b7dab675b0a823f6bf776867eafacc3f6636cfd07024d8bf0fa57c8fc"},
+    {file = "colt-0.6.1-py3-none-any.whl", hash = "sha256:e0daa23413c0090d296378873e501ced95d8f0b399c8062fa9cd5bfca66ab4a3"},
+    {file = "colt-0.6.1.tar.gz", hash = "sha256:38601f15cef18f157485d48a199d9df56dc09908da02c6224f60361459fd691a"},
 ]
 decore = [
     {file = "decore-0.0.1.tar.gz", hash = "sha256:2aff5856b50e1650dd7b2294722994a359ea05966c2303dca9b017d97219f9aa"},

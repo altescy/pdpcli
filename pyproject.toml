@@ -9,10 +9,10 @@ python = "^3.8"
 pandas = "^1.2.2"
 pdpipe = "^0.0.53"
 nltk = "^3.5"
-colt = "^0.5.0"
 omegaconf = "^2.0.6"
 jsonnet = "^0.17.0"
 scikit-learn = "^0.24.1"
+colt = "^0.6.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
