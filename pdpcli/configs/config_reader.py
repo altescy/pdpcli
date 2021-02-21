@@ -6,7 +6,6 @@ import logging
 import colt
 from omegaconf import OmegaConf, DictConfig, ListConfig
 
-from pdpcli.configs.yaml import load_yaml
 from pdpcli.configs.jsonnet import load_jsonnet
 
 logger = logging.getLogger(__name__)
@@ -17,7 +16,7 @@ class ConfigReader(colt.Registrable):
         self,
         file_path: Path,
         overrides: List[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> Union[Dict[str, Any]]:
         config = self._read(file_path)
 
         assert isinstance(config, DictConfig), "config should be a dict"
@@ -26,8 +25,8 @@ class ConfigReader(colt.Registrable):
             args_config = OmegaConf.from_dotlist(overrides)
             config = OmegaConf.merge(config, args_config)
 
-        config_yaml = OmegaConf.to_yaml(config)
-        return cast(Dict[str, Any], load_yaml(config_yaml))
+        container = OmegaConf.to_container(config, resolve=True)
+        return cast(Dict[str, Any], container)
 
     def _read(self, file_path: Path) -> Union[DictConfig, ListConfig]:
         raise NotImplementedError
