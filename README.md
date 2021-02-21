@@ -73,3 +73,81 @@ $ pdp apply pipeline.pkl test.csv --output-file processed_test.jsonl
 ```
 $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 ```
+
+5. It is possible to change parameters via command line:
+```
+pdp apply.yml test.csv pipeline.stages.drop_columns.column=age
+```
+
+### Plugins
+
+By using plugin, you can extend PdpCLI. Plugin feature enables you to use your own pipe stages and commands.
+
+#### Add a new stage
+
+1. Write your plugin script `mypdp.py` like the following. `PrintStage` just shows the DataFrame on stdout.
+```python
+import pdpcli
+
+@pdpcli.PdPipelineStage.register("print")
+class PrintStage(pdpcli.PdPipelineStage):
+    def _prec(self, df):
+        return True
+
+    def _transform(self, df, verbose):
+        print(df.to_string(index=False))
+        return df
+```
+
+2. Update `config.yml` to use your plugin.
+```yml
+pipeline:
+    type: pipeline
+    stages:
+        drop_columns:
+        ...
+        
+        print:
+            type: print
+            
+        encode:
+        ...
+```
+
+2. Execute command with `--module mypdp` and you can see the DataFrame after `drop_columns`.
+```
+$ pdp apply config.yml test.csv --module mypdp
+```
+
+#### Add a new command
+
+You can also add new coomands not only stages.
+
+1. Add the following script to `mypdp.py`. This `greet` command prints out a greeting message with your name.
+```python
+@pdpcli.Subcommand.register(
+    name="greet",
+    description="say hello",
+    help="say hello",
+)
+class GreetCommand(pdpcli.Subcommand):
+    requires_plugins = False
+
+    def set_arguments(self):
+        self.parser.add_argument("--name", default="world")
+
+    def run(self, args):
+        print(f"Hello, {args.name}!")
+
+```
+
+2. To register this command, you need to create the`.pdpcli_plugins` file. Due to the module import order, the `--module` option is unavailable for command registration.
+```
+$ echo "mypdp" > .pdpcli_plugins
+```
+
+3. Run the following command and get the message like below. By using the `.pdpcli_plugins` file, it is unnecessary to enter the `--module` option for each execution.
+```
+$ pdp greet --name altescy
+Hello, altescy
+```
