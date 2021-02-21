@@ -9,9 +9,7 @@ from pdpcli.commands.subcommand import Subcommand
 from pdpcli.plugins import import_plugins
 
 
-def main(prog: str = None):
-    import_plugins()
-
+def create_parser(prog: str = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(usage='%(prog)s', prog=prog)
     parser.add_argument(
         "--version",
@@ -32,13 +30,20 @@ def main(prog: str = None):
                 help="additional modules to include",
             )
 
+    return parser
+
+
+def main(prog: str = None):
+    import_plugins()
+
+    parser = create_parser(prog)
     args = parser.parse_args()
+
     func = getattr(args, "func", None)
+    if func is None:
+        parser.parse_args(["--help"])
 
     if hasattr(args, "module"):
         colt.import_modules(args.module)
 
-    if func is not None:
-        func(args)
-    else:
-        parser.parse_args(["--help"])
+    func(args)
