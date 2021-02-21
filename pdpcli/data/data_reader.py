@@ -1,6 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
+import importlib
 
 import colt
 import pandas
@@ -69,13 +70,13 @@ class SqlDataReader(DataReader):
 
     @staticmethod
     def _get_pgsql_connection(dsn: str):
-        import psycopg2  # pylint: disable=import-outside-toplevel
-        return psycopg2.connect(dsn)
+        psycopg2 = importlib.import_module("psycopg2")
+        return psycopg2.connect(dsn)  # type: ignore
 
     @staticmethod
     def _get_mysql_connection(dsn: str):
-        import MySQLdb  # pylint: disable=import-outside-toplevel
-        return MySQLdb.connect(dsn)
+        MySQLdb = importlib.import_module("MySQLdb")
+        return MySQLdb.connect(dsn)  # type: ignore
 
     @staticmethod
     def _get_sqlite_connection(path: str):
