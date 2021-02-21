@@ -1,12 +1,9 @@
 from __future__ import annotations
 from pathlib import Path
-from urllib.parse import urlparse
 from sqlalchemy import create_engine
 
 import colt
 import pandas
-
-from pdpcli.exceptions import ConfigurationError
 
 
 class DataReader(colt.Registrable):
