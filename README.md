@@ -18,7 +18,7 @@ PdpCLI
 
 ## Introduction
 
-PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pandas pipeline powered by [pdpipe](https://pdpipe.github.io/pdpipe/) from a configuration file. You can also extend pipeline stages and data readers/ writers by using your own python scripts.
+PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pandas pipeline powered by [pdpipe](https://pdpipe.github.io/pdpipe/) from a configuration file. You can also extend pipeline stages and data readers / writers by using your own python scripts.
 
 ### Features
   - Process pandas DataFrame from CLI without wrting Python scripts
@@ -83,6 +83,27 @@ pdp apply.yml test.csv pipeline.stages.drop_columns.column=age
 ```
 
 ### Data Reader / Writer
+
+PdpCLI automatically detects a suitable data reader / writer based on the file name.
+If you need to use the other data reader / writer, add `reader` or `writer` configs to `config.yml`.
+The following config is an exmaple to use SQL data reader.
+SQL reader fetches records from the specified database and convert them to pandas DataFrame.
+```yaml
+reader:
+    type: sql
+    dsn: postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@your.posgres.server/your_database
+```
+The config file is interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}` is interpolated by an environment variable.
+
+Prepare yuor SQL file `query.sql` to fetch data from the database:
+```sql
+select * from your_table limit 1000
+```
+
+You can execute the pipeline with SQL data reader via:
+```
+$ POSTGRES_USER=user POSTGRES_PASSWORD=password pdp apply config.yml query.sql
+```
 
 
 ### Plugins
