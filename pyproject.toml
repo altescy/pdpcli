@@ -25,12 +25,18 @@ omegaconf = "^2.0.6"
 jsonnet = "^0.17.0"
 scikit-learn = "^0.24.1"
 colt = "^0.6.1"
+mysqlclient = {version = "^2.0.3", optional = true}
+psycopg2 = {version = "^2.8.6", optional = true}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 python-language-server = "^0.36.2"
 mypy = "^0.812"
 pylint = "^2.6.2"
+
+[tool.poetry.extras]
+mysql = ["mysqlclient"]
+pgsql = ["psycopg2"]
 
 [tool.poetry.scripts]
 pdp = "pdpcli.__main__:run"
