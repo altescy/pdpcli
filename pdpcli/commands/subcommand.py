@@ -24,6 +24,10 @@ class Subcommand:
         self._parser: Optional[argparse.ArgumentParser] = None
 
     @property
+    def name(self) -> str:
+        return self._name
+
+    @property
     def parser(self) -> argparse.ArgumentParser:
         if self._parser is None:
             raise RuntimeError("parser is not set")

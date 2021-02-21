@@ -1,12 +1,17 @@
+from typing import Set
 import argparse
+import sys
 
 import colt
 
 from pdpcli import __version__
 from pdpcli.commands.subcommand import Subcommand
+from pdpcli.plugins import import_plugins
 
 
 def main(prog: str = None):
+    import_plugins()
+
     parser = argparse.ArgumentParser(usage='%(prog)s', prog=prog)
     parser.add_argument(
         "--version",
@@ -30,7 +35,8 @@ def main(prog: str = None):
     args = parser.parse_args()
     func = getattr(args, "func", None)
 
-    colt.import_modules(args.module)
+    if hasattr(args, "module"):
+        colt.import_modules(args.module)
 
     if func is not None:
         func(args)
