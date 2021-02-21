@@ -4,6 +4,7 @@ import argparse
 
 
 class Subcommand:
+    requires_plugins: bool = True
     subcommands: List["Subcommand"] = []
 
     @classmethod

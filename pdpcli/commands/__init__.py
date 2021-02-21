@@ -13,18 +13,19 @@ def main(prog: str = None):
         action="version",
         version="%(prog)s " + __version__,
     )
-    parser.add_argument(
-        "--module",
-        type=str,
-        action="append",
-        default=[],
-        help="additional modules to include",
-    )
 
     subparsers = parser.add_subparsers()
 
     for subcommand in Subcommand.subcommands:
         subcommand.setup(subparsers)
+        if subcommand.requires_plugins:
+            subcommand.parser.add_argument(
+                "--module",
+                type=str,
+                action="append",
+                default=[],
+                help="additional modules to include",
+            )
 
     args = parser.parse_args()
     func = getattr(args, "func", None)
