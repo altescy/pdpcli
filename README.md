@@ -11,6 +11,9 @@ PdpCLI
 - [Introduction](#Introduction)
 - [Installation](#Installation)
 - [Tutorial](#Tutorial)
+  - [Basic Usage](#basic-usage)
+  - [Data Reader / Writer](#data-reader-writer)
+  - [Plugins](#plugins)
 
 
 ## Introduction
@@ -79,7 +82,7 @@ $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 pdp apply.yml test.csv pipeline.stages.drop_columns.column=age
 ```
 
-### Data reader / writer
+### Data Reader / Writer
 
 
 ### Plugins
