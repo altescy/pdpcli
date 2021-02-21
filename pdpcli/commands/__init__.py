@@ -29,9 +29,9 @@ def main(prog: str = None):
     args = parser.parse_args()
     func = getattr(args, "func", None)
 
+    colt.import_modules(args.module)
+
     if func is not None:
         func(args)
     else:
         parser.parse_args(["--help"])
-
-    colt.import_modules(args.module)
