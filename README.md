@@ -64,7 +64,7 @@ pipeline:
 $ pdp build config.yml pipeline.pkl --input-file train.csv
 ```
 
-3. Apply fitted pipeline to `test.csv` and output the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, processed DataFrame will be exported as the JSONL format.
+3. Apply fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, processed DataFrame will be exported as the JSONL format.
 ```
 $ pdp apply pipeline.pkl test.csv --output-file processed_test.jsonl
 ```
@@ -79,9 +79,12 @@ $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 pdp apply.yml test.csv pipeline.stages.drop_columns.column=age
 ```
 
+### Data reader / writer
+
+
 ### Plugins
 
-By using plugin, you can extend PdpCLI. Plugin feature enables you to use your own pipe stages and commands.
+By using plugins, you can extend PdpCLI. The plugin feature enables you to use your own pipeline stages, data reader / writer and commands.
 
 #### Add a new stage
 
