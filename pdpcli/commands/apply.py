@@ -63,7 +63,8 @@ class ApplyCommand(Subcommand):
             pipeline = self._load_pipeline_from_pickle(args.pipeline)
             reader, writer = None, None
         else:
-            pipeline, reader, writer = self._build_config(args.pipeline)
+            pipeline, reader, writer = self._build_config(
+                args.pipeline, args.overrides)
 
         if args.config:
             logger.info("Load data reader / writer from: %s", str(args.config))
