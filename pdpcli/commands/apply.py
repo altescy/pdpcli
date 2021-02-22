@@ -109,7 +109,7 @@ class ApplyCommand(Subcommand):
     def _load_pipeline_from_pickle(
             file_path: Union[str, Path]) -> pdpipe.PdPipelineStage:
         file_path = util.cached_path(file_path)
-        with util.open_file(file_path, "rb") as fp:
+        with open(file_path, "rb") as fp:
             pipeline = pickle.load(fp)
         return pipeline
 
