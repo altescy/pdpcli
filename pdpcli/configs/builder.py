@@ -33,6 +33,6 @@ class ConfigBuilder:
         reader: Optional[DataReader] = None,
         writer: Optional[DataWriter] = None,
     ) -> None:
-        self.pipeline = pipeline or PassThroughStage
+        self.pipeline = pipeline or PassThroughStage()
         self.reader = reader
         self.writer = writer
