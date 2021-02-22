@@ -9,7 +9,9 @@ pipeline:
   stages:
     drop_columns:
       type: col_drop
-      columns: foo
+      columns:
+        - name
+        - job
 
     encode:
       type: one_hot_encode
@@ -17,9 +19,9 @@ pipeline:
 
     tokenize:
       type: tokenize_text
-      columns: profile
+      columns: content
 
     vectorize:
       type: tfidf_vectorize_token_lists
-      column: profile
-      min_df: 2
+      column: content
+      max_features: 10
