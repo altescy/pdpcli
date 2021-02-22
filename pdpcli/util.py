@@ -40,7 +40,7 @@ def cached_path(url_or_filename: Union[str, Path],
     if parsed.scheme in ("", "file", "osfs"):
         return Path(url_or_filename)
 
-    cache_path = CACHE_DIRRECTORY / _get_cached_filename(url_or_filename)
+    cache_path = cache_dir / _get_cached_filename(url_or_filename)
     if cache_path.exists():
         logger.info("use cache for %s: %s", str(url_or_filename),
                     str(cache_path))
