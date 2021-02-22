@@ -4,15 +4,22 @@ import copy
 
 import colt
 
-from pdpcli.stages import PdPipelineStage
+from pdpcli.stages import Stage, PassThroughStage
 from pdpcli.settings import DEFAULT_COLT_SETTING
 from pdpcli.data.data_reader import DataReader
 from pdpcli.data.data_writer import DataWriter
 
 
 class ConfigBuilder:
+    FIELDS = ["colt", "pipeline", "reader", "writer"]
+
     @classmethod
     def build(cls, config: Dict[str, Any]) -> ConfigBuilder:
+        config = {
+            key: value
+            for key, value in config.items() if key in ConfigBuilder.FIELDS
+        }
+
         colt_config = copy.deepcopy(DEFAULT_COLT_SETTING)
         colt_config.update(config.pop("colt", {}))
 
@@ -22,10 +29,10 @@ class ConfigBuilder:
 
     def __init__(
         self,
-        pipeline: PdPipelineStage,
+        pipeline: Optional[Stage] = None,
         reader: Optional[DataReader] = None,
         writer: Optional[DataWriter] = None,
     ) -> None:
-        self.pipeline = pipeline
+        self.pipeline = pipeline or PassThroughStage
         self.reader = reader
         self.writer = writer

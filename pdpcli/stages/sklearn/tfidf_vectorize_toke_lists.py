@@ -4,7 +4,7 @@ import pandas
 from pdpipe.shared import _identity_function
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from pdpcli.stages import PdPipelineStage
+from pdpcli.stages.stage import Stage
 
 
 def _get_args_list(func):
@@ -12,8 +12,8 @@ def _get_args_list(func):
     return list(signature.parameters.keys())
 
 
-@PdPipelineStage.register("tfidf_vectorize_token_lists", exist_ok=True)
-class TfidfVectorizeTokenLists(PdPipelineStage):
+@Stage.register("tfidf_vectorize_token_lists", exist_ok=True)
+class TfidfVectorizeTokenLists(Stage):
 
     _DEF_CNTVEC_MSG = "Count-vectorizing column {}."
 
@@ -39,7 +39,7 @@ class TfidfVectorizeTokenLists(PdPipelineStage):
         }
         pipeline_stage_args = {
             k: kwargs[k]
-            for k in kwargs if k in PdPipelineStage._INIT_KWARGS
+            for k in kwargs if k in Stage._INIT_KWARGS
         }
         super_kwargs.update(**pipeline_stage_args)
         super().__init__(**super_kwargs)
