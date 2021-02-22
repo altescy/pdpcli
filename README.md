@@ -119,8 +119,8 @@ By using plugins, you can extend PdpCLI. The plugin feature enables you to use y
 ```python
 import pdpcli
 
-@pdpcli.PdPipelineStage.register("print")
-class PrintStage(pdpcli.PdPipelineStage):
+@pdpcli.Stage.register("print")
+class PrintStage(pdpcli.Stage):
     def _prec(self, df):
         return True
 
