@@ -47,7 +47,9 @@ pipeline:
   stages:
     drop_columns:
       type: col_drop
-      columns: foo
+      columns:
+        - name
+        - job
 
     encode:
       type: one_hot_encode
@@ -55,21 +57,22 @@ pipeline:
 
     tokenize:
       type: tokenize_text
-      columns: profile
+      columns: content
 
     vectorize:
       type: tfidf_vectorize_token_lists
-      column: profile
+      column: content
+      max_features: 10
 ```
 
-2. Build a pipeline by training on `train.csv`. The following command generage a pickled pipeline file `pipeline.pkl` after training.
+2. Build a pipeline by training on `train.csv`. The following command generage a pickled pipeline file `pipeline.pkl` after training. If you specify URL for file path, it will be automatically downloaded and cached.
 ```
-$ pdp build config.yml pipeline.pkl --input-file train.csv
+$ pdp build config.yml pipeline.pkl --input-file https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/train.csv
 ```
 
 3. Apply fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, processed DataFrame will be exported as the JSONL format.
 ```
-$ pdp apply pipeline.pkl test.csv --output-file processed_test.jsonl
+$ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/test.csv --output-file processed_test.jsonl
 ```
 
 4. You can also directly run the pipeline from a config file if you don't need to fit the pipeline.
@@ -79,7 +82,7 @@ $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 
 5. It is possible to change parameters via command line:
 ```
-pdp apply.yml test.csv pipeline.stages.drop_columns.column=age
+pdp apply config.yml test.csv pipeline.stages.drop_columns.column=age
 ```
 
 ### Data Reader / Writer
@@ -176,5 +179,5 @@ $ echo "mypdp" > .pdpcli_plugins
 3. Run the following command and get the message like below. By using the `.pdpcli_plugins` file, it is unnecessary to enter the `--module` option for each execution.
 ```
 $ pdp greet --name altescy
-Hello, altescy
+Hello, altescy!
 ```
