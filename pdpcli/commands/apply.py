@@ -36,7 +36,7 @@ class ApplyCommand(Subcommand):
         )
         self.parser.add_argument(
             "-o",
-            "--output_file",
+            "--output-file",
             type=str,
             help="path to a output file of result data frame",
         )
