@@ -1,17 +1,20 @@
 from __future__ import annotations
 from pathlib import Path
+import os
 
-import colt
 import pandas
 from sqlalchemy import create_engine
 
+from pdpcli.exceptions import ConfigurationError
+from pdpcli.registrable import RegistrableWithFile
 
-class DataWriter(colt.Registrable):
+
+class DataWriter(RegistrableWithFile):
     def write(self, df: pandas.DataFrame, file_path: Path) -> None:
         raise NotImplementedError
 
 
-@DataWriter.register("csv")
+@DataWriter.register("csv", extensions=[".csv"])
 class CsvDataWriter(DataWriter):
     def __init__(self, *args, **kwargs) -> None:
         self._args = args
@@ -22,7 +25,14 @@ class CsvDataWriter(DataWriter):
         df.to_csv(file_path, *self._args, **self._kwargs)
 
 
-@DataWriter.register("json")
+@DataWriter.register("tsv", extensions=[".tsv"])
+class TsvDataWriter(CsvDataWriter):
+    def __init__(self, *args, **kwargs) -> None:
+        kwargs["sep"] = "\t"
+        super().__init__(*args, **kwargs)
+
+
+@DataWriter.register("json", extensions=[".json"])
 class JsonDataWriter(DataWriter):
     def __init__(self, *args, **kwargs) -> None:
         self._args = args
@@ -32,7 +42,15 @@ class JsonDataWriter(DataWriter):
         df.to_json(file_path, *self._args, **self._kwargs)
 
 
-@DataWriter.register("pickle")
+@DataWriter.register("jsonl", extensions=[".jsonl"])
+class JsonLinesDataWriter(JsonDataWriter):
+    def __init__(self, *args, **kwargs) -> None:
+        kwargs["orient"] = "records"
+        kwargs["lines"] = True
+        super().__init__(*args, **kwargs)
+
+
+@DataWriter.register("pickle", extensions=[".pkl", ".pickle"])
 class PickleDataWriter(DataWriter):
     def __init__(self, *args, **kwargs) -> None:
         self._args = args
@@ -42,9 +60,14 @@ class PickleDataWriter(DataWriter):
         df.to_pickle(file_path, *self._args, **self._kwargs)
 
 
-@DataWriter.register("sql")
+@DataWriter.register("sql", extensions=[".sql"])
 class SqlDataWriter(DataWriter):
-    def __init__(self, dsn: str, **kwargs) -> None:
+    DSN_KEY = "PDPCLI_SQL_DATA_WRITER_DSN"
+
+    def __init__(self, dsn: str = None, **kwargs) -> None:
+        dsn = dsn or os.environ.get(self.DSN_KEY)
+        if dsn is None:
+            raise ConfigurationError("DSN not specifiled")
         self._dsn = dsn
         self._kwargs = kwargs
 

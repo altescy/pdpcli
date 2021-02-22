@@ -1,9 +1,16 @@
-from typing import Optional
+from typing import Any, IO, Iterator
+from contextlib import contextmanager
+from os import PathLike
 from pathlib import Path
+from urllib.parse import urlparse
 import re
+import tempfile
 
-import pdpcli.data
-import pdpcli.configs
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from fs import open_fs
+from tqdm import tqdm
 
 
 def camel_to_snake(s: str) -> str:
@@ -11,50 +18,63 @@ def camel_to_snake(s: str) -> str:
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', underscored).lower()
 
 
-def infer_data_reader(file_path: Path) -> Optional[pdpcli.data.DataReader]:
-    ext = file_path.suffix
-    if ext in (".csv", ):
-        return pdpcli.data.CsvDataReader()
+@contextmanager
+def open_file(file_path: PathLike,
+              mode: str = "r",
+              **kwargs) -> Iterator[IO[Any]]:
+    parsed = urlparse(str(file_path))
 
-    if ext in (".tsv", ):
-        return pdpcli.data.CsvDataReader(sep="\t")
+    if parsed.scheme in ("http", "https"):
 
-    if ext in ("jsonl", ):
-        return pdpcli.data.JsonDataReader(orient="records")
+        if not mode.startswith("r"):
+            raise ValueError(f"invalid mode for http(s): {mode}")
 
-    if ext in (".pkl", ".pickle"):
-        return pdpcli.data.PickleDataReader()
+        url = str(file_path)
+        with tempfile.TemporaryFile(mode=mode) as fp:
+            _http_get(url, fp)
+            yield fp
 
-    return None
+    else:
 
-
-def infer_data_writer(file_path: Path) -> Optional[pdpcli.data.DataWriter]:
-    ext = file_path.suffix
-    if ext in (".csv", ):
-        return pdpcli.data.CsvDataWriter()
-
-    if ext in (".tsv", ):
-        return pdpcli.data.CsvDataWriter(sep="\t")
-
-    if ext in (".jsonl", ):
-        return pdpcli.data.JsonDataWriter(orient="records", lines=True)
-
-    if ext in (".pkl", ".pickle"):
-        return pdpcli.data.PickleDataWriter()
-
-    return None
+        with open_file_with_fs(file_path, **kwargs) as fp:
+            yield fp
 
 
-def infer_config_reader(
-        file_path: Path) -> Optional[pdpcli.configs.ConfigReader]:
-    ext = file_path.suffix
-    if ext in (".yml", ".yaml"):
-        return pdpcli.configs.YamlConfigReader()
+@contextmanager
+def open_file_with_fs(file_path: PathLike, *args,
+                      **kwargs) -> Iterator[IO[Any]]:
+    file_path = Path(file_path)
+    parent = str(file_path.parent)
+    name = str(file_path.name)
 
-    if ext in (".json", ):
-        return pdpcli.configs.JsonConfigReader()
+    with open_fs(parent) as fs:
+        with fs.open(name, *args, **kwargs) as fp:
+            yield fp
 
-    if ext in (".jsonnet", ):
-        return pdpcli.configs.JsonnetConfigReader()
 
-    return None
+def _session_with_backoff() -> requests.Session:
+    """
+    https://stackoverflow.com/questions/23267409/how-to-implement-retry-mechanism-into-python-requests-library
+    """
+    session = requests.Session()
+    retries = Retry(total=5,
+                    backoff_factor=1,
+                    status_forcelist=[502, 503, 504])
+    session.mount("http://", HTTPAdapter(max_retries=retries))
+    session.mount("https://", HTTPAdapter(max_retries=retries))
+
+    return session
+
+
+def _http_get(url: str, temp_file: IO) -> None:
+    with _session_with_backoff() as session:
+        req = session.get(url, stream=True)
+        req.raise_for_status()
+        content_length = req.headers.get("Content-Length")
+        total = int(content_length) if content_length is not None else None
+        progress = tqdm(unit="B", total=total, desc="downloading")
+        for chunk in req.iter_content(chunk_size=1024):
+            if chunk:  # filter out keep-alive new chunks
+                progress.update(len(chunk))
+                temp_file.write(chunk)
+        progress.close()

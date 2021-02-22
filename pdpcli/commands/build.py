@@ -5,10 +5,11 @@ from pathlib import Path
 
 import pdpipe  # pylint: disable=unused-import
 
-from pdpcli import util
 from pdpcli.builder import ConfigBuilder
 from pdpcli.commands.subcommand import Subcommand
+from pdpcli.data.data_reader import DataReader
 from pdpcli.exceptions import ConfigurationError
+from pdpcli.configs.config_reader import ConfigReader
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class BuildCommand(Subcommand):
         )
 
     def run(self, args: argparse.Namespace) -> None:
-        config_reader = util.infer_config_reader(args.config)
+        config_reader = ConfigReader.from_path(args.config)
         if config_reader is None:
             raise ConfigurationError("Failed to infer config reader.")
 
@@ -57,7 +58,7 @@ class BuildCommand(Subcommand):
         logger.info("Build pipeline:\n%s", str(pipeline))
 
         if args.input_file:
-            reader = builder.reader or util.infer_data_reader(args.input_file)
+            reader = builder.reader or DataReader.from_path(args.input_file)
             if reader is None:
                 raise ConfigurationError("Failed to infer data reader.")
 

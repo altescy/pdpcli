@@ -3,15 +3,15 @@ from pathlib import Path
 import json
 import logging
 
-import colt
 from omegaconf import OmegaConf, DictConfig, ListConfig
 
+from pdpcli.registrable import RegistrableWithFile
 from pdpcli.configs.jsonnet import load_jsonnet
 
 logger = logging.getLogger(__name__)
 
 
-class ConfigReader(colt.Registrable):
+class ConfigReader(RegistrableWithFile):
     def read(
         self,
         file_path: Path,
@@ -32,13 +32,13 @@ class ConfigReader(colt.Registrable):
         raise NotImplementedError
 
 
-@ConfigReader.register("yaml")
+@ConfigReader.register("yaml", extensions=[".yml", ".yaml"])
 class YamlConfigReader(ConfigReader):
     def _read(self, file_path: Path) -> Union[DictConfig, ListConfig]:
         return OmegaConf.load(file_path)
 
 
-@ConfigReader.register("json")
+@ConfigReader.register("json", extensions=[".json"])
 class JsonConfigReader(ConfigReader):
     def _read(self, file_path: Path) -> Union[DictConfig, ListConfig]:
         with open(file_path, "r") as fp:
@@ -46,7 +46,7 @@ class JsonConfigReader(ConfigReader):
         return OmegaConf.create(jsondict)  # type: ignore
 
 
-@ConfigReader.register("jsonnet")
+@ConfigReader.register("jsonnet", extensions=[".jsonnet"])
 class JsonnetConfigReader(ConfigReader):
     def _read(self, file_path: Path) -> Union[DictConfig, ListConfig]:
         jsondict = load_jsonnet(file_path)
