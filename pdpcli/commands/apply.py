@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Union
 import pdpipe
 
 from pdpcli import util
-from pdpcli.builder import ConfigBuilder
+from pdpcli.configs import ConfigBuilder
 from pdpcli.data import DataReader, DataWriter
 from pdpcli.exceptions import ConfigurationError
 from pdpcli.commands.subcommand import Subcommand

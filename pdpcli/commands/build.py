@@ -4,7 +4,7 @@ import pickle
 
 import pdpipe  # pylint: disable=unused-import
 
-from pdpcli.builder import ConfigBuilder
+from pdpcli.configs import ConfigBuilder
 from pdpcli.commands.subcommand import Subcommand
 from pdpcli.data.data_reader import DataReader
 from pdpcli.exceptions import ConfigurationError
