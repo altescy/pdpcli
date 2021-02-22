@@ -60,7 +60,7 @@ class PickleDataWriter(DataWriter):
         df.to_pickle(file_path, *self._args, **self._kwargs)
 
 
-@DataWriter.register("sql", extensions=[".sql"])
+@DataWriter.register("sql")
 class SqlDataWriter(DataWriter):
     DSN_KEY = "PDPCLI_SQL_DATA_WRITER_DSN"
 
