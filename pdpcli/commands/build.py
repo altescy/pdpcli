@@ -1,7 +1,6 @@
 import argparse
 import logging
 import pickle
-from pathlib import Path
 
 import pdpipe  # pylint: disable=unused-import
 
@@ -23,18 +22,18 @@ class BuildCommand(Subcommand):
     def set_arguments(self) -> None:
         self.parser.add_argument(
             "config",
-            type=Path,
+            type=str,
             help="path to a configuration file",
         )
         self.parser.add_argument(
             "pipeline",
-            type=Path,
+            type=str,
             help="path to a output file of a trained model",
         )
         self.parser.add_argument(
             "-i",
             "--input-file",
-            type=Path,
+            type=str,
             default=None,
             help="path to a input file for training",
         )

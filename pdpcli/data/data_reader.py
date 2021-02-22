@@ -22,8 +22,8 @@ class CsvDataReader(DataReader):
         self._kwargs = kwargs
 
     def read(self, file_path: Path) -> pandas.DataFrame:
-        with util.open_file(file_path) as fp:
-            df = pandas.read_csv(fp, *self._args, **self._kwargs)
+        file_path = util.cached_path(file_path)
+        df = pandas.read_csv(file_path, *self._args, **self._kwargs)
         return df
 
 
@@ -41,8 +41,8 @@ class JsonDataReader(DataReader):
         self._kwargs = kwargs
 
     def read(self, file_path: Path) -> pandas.DataFrame:
-        with util.open_file(file_path) as fp:
-            df = pandas.read_json(fp, *self._args, **self._kwargs)
+        file_path = util.cached_path(file_path)
+        df = pandas.read_json(file_path, *self._args, **self._kwargs)
         return df
 
 
@@ -61,8 +61,8 @@ class PickleDataReader(DataReader):
         self._kwargs = kwargs
 
     def read(self, file_path: Path) -> pandas.DataFrame:
-        with util.open_file(file_path, "rb") as fp:
-            df = pandas.read_pickle(fp, *self._args, **self._kwargs)
+        file_path = util.cached_path(file_path)
+        df = pandas.read_pickle(file_path, *self._args, **self._kwargs)
         return df
 
 

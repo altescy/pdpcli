@@ -1,8 +1,10 @@
-from typing import Any, IO, Iterator
+from typing import Any, IO, Iterator, Union
 from contextlib import contextmanager
-from os import PathLike
 from pathlib import Path
 from urllib.parse import urlparse
+import hashlib
+import logging
+import os
 import re
 import tempfile
 
@@ -12,36 +14,72 @@ from urllib3.util.retry import Retry
 from fs import open_fs
 from tqdm import tqdm
 
+from pdpcli.settings import CACHE_DIRRECTORY
+
+logger = logging.getLogger(__name__)
+
 
 def camel_to_snake(s: str) -> str:
     underscored = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', underscored).lower()
 
 
+def get_file_ext(file_path: Union[str, Path]) -> str:
+    file_path = Path(file_path)
+    return file_path.suffix
+
+
+def cached_path(url_or_filename: Union[str, Path]) -> Path:
+    os.makedirs(CACHE_DIRRECTORY, exist_ok=True)
+
+    parsed = urlparse(str(url_or_filename))
+
+    if parsed.scheme in ("", "file", "osfs"):
+        return Path(url_or_filename)
+
+    cache_path = CACHE_DIRRECTORY / _get_cached_filename(url_or_filename)
+    if cache_path.exists():
+        logger.info("use cache for %s: %s", str(url_or_filename),
+                    str(cache_path))
+        return cache_path
+
+    cache_fp = open(cache_path, "w+b")
+    try:
+        with open_file(url_or_filename, "r+b") as fp:
+            cache_fp.write(fp.read())
+    finally:
+        cache_fp.close()
+
+    return cache_path
+
+
 @contextmanager
-def open_file(file_path: PathLike,
+def open_file(file_path: Union[str, Path],
               mode: str = "r",
               **kwargs) -> Iterator[IO[Any]]:
     parsed = urlparse(str(file_path))
 
     if parsed.scheme in ("http", "https"):
-
         if not mode.startswith("r"):
             raise ValueError(f"invalid mode for http(s): {mode}")
 
         url = str(file_path)
-        with tempfile.TemporaryFile(mode=mode) as fp:
-            _http_get(url, fp)
-            yield fp
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
 
+        try:
+            _http_get(url, temp_file)
+            temp_file.close()
+            with open(temp_file.name, mode) as fp:
+                yield fp
+        finally:
+            os.remove(temp_file.name)
     else:
-
         with open_file_with_fs(file_path, **kwargs) as fp:
             yield fp
 
 
 @contextmanager
-def open_file_with_fs(file_path: PathLike, *args,
+def open_file_with_fs(file_path: Union[str, Path], *args,
                       **kwargs) -> Iterator[IO[Any]]:
     file_path = Path(file_path)
     parent = str(file_path.parent)
@@ -78,3 +116,10 @@ def _http_get(url: str, temp_file: IO) -> None:
                 progress.update(len(chunk))
                 temp_file.write(chunk)
         progress.close()
+
+
+def _get_cached_filename(path: Union[str, Path]) -> str:
+    encoded_path = str(path).encode()
+    name = hashlib.md5(encoded_path).hexdigest()
+    ext = get_file_ext(path)
+    return name + ext

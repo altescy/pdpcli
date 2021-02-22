@@ -1,8 +1,10 @@
-from typing import Dict, List, Type, TypeVar
+from typing import Dict, List, Type, TypeVar, Union
 from collections import defaultdict
 from pathlib import Path
 
 import colt
+
+from pdpcli import util
 
 T = TypeVar("T", bound="RegistrableWithFile")
 
@@ -11,9 +13,9 @@ class RegistrableWithFile(colt.Registrable):
     extensions: Dict[Type, Dict[str, str]] = defaultdict(dict)
 
     @classmethod
-    def from_path(cls: Type[T], file_path: Path, *args, **kwargs):
+    def from_path(cls: Type[T], file_path: Union[str, Path], *args, **kwargs):
         registry = RegistrableWithFile.extensions[cls]
-        ext = file_path.suffix
+        ext = util.get_file_ext(file_path)
         if ext in registry:
             name = registry[ext]
             subclass = cls.by_name(name)

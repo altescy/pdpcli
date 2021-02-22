@@ -3,7 +3,7 @@ import logging
 import pickle
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import pdpipe
 
@@ -26,24 +26,24 @@ class ApplyCommand(Subcommand):
     def set_arguments(self) -> None:
         self.parser.add_argument(
             "pipeline",
-            type=Path,
+            type=str,
             help="path to trained model or config file",
         )
         self.parser.add_argument(
             "input_file",
-            type=Path,
+            type=str,
             help="path to a input file to apply pipeline",
         )
         self.parser.add_argument(
             "-o",
             "--output_file",
-            type=Path,
+            type=str,
             help="path to a output file of result data frame",
         )
         self.parser.add_argument(
             "-c",
             "--config",
-            type=Path,
+            type=str,
             default=None,
             help="path to a output file for data reader / writer",
         )
@@ -59,6 +59,7 @@ class ApplyCommand(Subcommand):
         )
 
     def run(self, args: argparse.Namespace) -> None:
+        # Load pipeline
         logger.info("Load pipeline from: %s", str(args.pipeline))
         if self._is_pickle_file(args.pipeline):
             pipeline = self._load_pipeline_from_pickle(args.pipeline)
@@ -67,22 +68,25 @@ class ApplyCommand(Subcommand):
             pipeline, reader, writer = self._build_config(
                 args.pipeline, args.overrides)
 
+        logger.info("Pipeline:\n%s", str(pipeline))
+
+        # Construct reader / writer from config
         if args.config:
             logger.info("Load data reader / writer from: %s", str(args.config))
             _, reader, writer = self._build_config(args.config, args.overrides)
 
-        logger.info("Pipeline:\n%s", str(pipeline))
-
+        # Read input file
         reader = DataReader.from_path(args.input_file)
         if reader is None:
             raise ConfigurationError("Failed to infer data reader")
-
         logger.info("Load input file: %s", str(args.input_file))
         df = reader.read(args.input_file)
 
+        # Apply pipeline
         logger.info("Apply pipeline")
         result_df = pipeline.apply(df)
 
+        # Save processed data
         if args.output_file:
             writer = writer or DataWriter.from_path(args.output_file)
             if writer is None:
@@ -97,19 +101,21 @@ class ApplyCommand(Subcommand):
         logger.info("Done")
 
     @staticmethod
-    def _is_pickle_file(file_path: Path) -> bool:
-        ext = file_path.suffix
+    def _is_pickle_file(file_path: Union[str, Path]) -> bool:
+        ext = util.get_file_ext(file_path)
         return ext in (".pkl", ".pickle")
 
     @staticmethod
-    def _load_pipeline_from_pickle(file_path: Path) -> pdpipe.PdPipelineStage:
+    def _load_pipeline_from_pickle(
+            file_path: Union[str, Path]) -> pdpipe.PdPipelineStage:
+        file_path = util.cached_path(file_path)
         with util.open_file(file_path, "rb") as fp:
             pipeline = pickle.load(fp)
         return pipeline
 
     @staticmethod
     def _build_config(
-        file_path: Path,
+        file_path: Union[str, Path],
         overrides: List[str] = None,
     ) -> Tuple[pdpipe.PdPipelineStage, Optional[DataReader],
                Optional[DataWriter]]:
