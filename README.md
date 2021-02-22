@@ -23,7 +23,7 @@ PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pa
 ### Features
   - Process pandas DataFrame from CLI without wrting Python scripts
   - Support multiple configuration file formats: YAML, JSON, Jsonnet
-  - Read / write data files in the following formats: CSV, TSV, JSONL, XLSX
+  - Read / write data files in the following formats: CSV, TSV, JSONL
   - Extensible pipeline and data readers / writers
 
 
@@ -82,7 +82,7 @@ $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 
 5. It is possible to change parameters via command line:
 ```
-pdp apply config.yml test.csv pipeline.stages.drop_columns.column=age
+pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 ```
 
 ### Data Reader / Writer
