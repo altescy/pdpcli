@@ -29,8 +29,11 @@ def get_file_ext(file_path: Union[str, Path]) -> str:
     return file_path.suffix
 
 
-def cached_path(url_or_filename: Union[str, Path]) -> Path:
-    os.makedirs(CACHE_DIRRECTORY, exist_ok=True)
+def cached_path(url_or_filename: Union[str, Path],
+                cache_dir: Union[str, Path] = None) -> Path:
+    cache_dir = Path(cache_dir or CACHE_DIRRECTORY)
+
+    os.makedirs(cache_dir, exist_ok=True)
 
     parsed = urlparse(str(url_or_filename))
 
