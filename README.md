@@ -32,7 +32,7 @@ PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pa
 
 Installing the library is simple using pip.
 ```
-$ pip install pdpcli
+$ pip install "pdpcli[all]"
 ```
 
 
@@ -137,10 +137,10 @@ pipeline:
     stages:
         drop_columns:
         ...
-        
+
         print:
             type: print
-            
+
         encode:
         ...
 ```
