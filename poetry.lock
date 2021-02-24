@@ -62,12 +62,12 @@ version = "0.2.0"
 category = "main"
 description = "The AWS SDK for Python"
 name = "boto3"
-optional = true
+optional = false
 python-versions = ">= 2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
-version = "1.17.12"
+version = "1.17.14"
 
 [package.dependencies]
-botocore = ">=1.20.12,<1.21.0"
+botocore = ">=1.20.14,<1.21.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -75,9 +75,9 @@ s3transfer = ">=0.3.0,<0.4.0"
 category = "main"
 description = "Low-level, data-driven core of boto 3."
 name = "botocore"
-optional = true
+optional = false
 python-versions = ">= 2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
-version = "1.20.12"
+version = "1.20.14"
 
 [package.dependencies]
 jmespath = ">=0.7.1,<1.0.0"
@@ -165,7 +165,7 @@ scandir = ["scandir (>=1.5,<2.0)"]
 category = "main"
 description = "Amazon S3 filesystem for PyFilesystem2"
 name = "fs-s3fs"
-optional = true
+optional = false
 python-versions = "*"
 version = "1.1.1"
 
@@ -254,7 +254,7 @@ testing = ["Django (<3.1)", "colorama", "docopt", "pytest (>=3.9.0,<5.0.0)"]
 category = "main"
 description = "JSON Matching Expressions"
 name = "jmespath"
-optional = true
+optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 version = "0.10.0"
 
@@ -511,7 +511,7 @@ description = "python code static checker"
 name = "pylint"
 optional = false
 python-versions = "~=3.6"
-version = "2.7.0"
+version = "2.7.1"
 
 [package.dependencies]
 astroid = "2.5.0"
@@ -650,7 +650,7 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 category = "main"
 description = "An Amazon S3 Transfer Manager"
 name = "s3transfer"
-optional = true
+optional = false
 python-versions = "*"
 version = "0.3.4"
 
@@ -846,12 +846,12 @@ python-versions = "*"
 version = "1.12.1"
 
 [extras]
+all = ["mysqlclient", "psycopg2"]
 mysql = ["mysqlclient"]
 pgsql = ["psycopg2"]
-s3 = ["fs-s3fs"]
 
 [metadata]
-content-hash = "939afdfa38b8b1b330d1df955690fb4863157141a6982d3a8572a9c1a6dd1d5d"
+content-hash = "4bff65363ce9cec39b5ea12381f9f8bc987d8556c55f7d16a03b30c043670a14"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -881,12 +881,12 @@ backcall = [
     {file = "backcall-0.2.0.tar.gz", hash = "sha256:5cbdbf27be5e7cfadb448baf0aa95508f91f2bbc6c6437cd9cd06e2a4c215e1e"},
 ]
 boto3 = [
-    {file = "boto3-1.17.12-py2.py3-none-any.whl", hash = "sha256:bbc47e6f83372d9a18483895e7116ea50e8da32ffb62e8afc0a6e2323f964ed9"},
-    {file = "boto3-1.17.12.tar.gz", hash = "sha256:62f06cd1e7a78d8aaa4e527c327653e9a6c1af415b59836048a90c28a27e5f09"},
+    {file = "boto3-1.17.14-py2.py3-none-any.whl", hash = "sha256:95e23684bccdb0e02910fd71586ca2a1941a0f96ba1a8753e5f1e990c8fd25d9"},
+    {file = "boto3-1.17.14.tar.gz", hash = "sha256:a1dc13aa5fac7bc6df0ca29e0a93e320a7a2370f9fe03cfb7284090d9180b97a"},
 ]
 botocore = [
-    {file = "botocore-1.20.12-py2.py3-none-any.whl", hash = "sha256:e576e1697ad9dc794961ed1ba51bdea7e0574ec27981c888482955f4be5cc4e8"},
-    {file = "botocore-1.20.12.tar.gz", hash = "sha256:39a92315a17a6f8bc1914dbb020f52e929f18e5b99a4fa1c5d8785f913427ed8"},
+    {file = "botocore-1.20.14-py2.py3-none-any.whl", hash = "sha256:38f73dca0e3f2448ad91f6dbff99fc09ec1b2b9250a8b4871c90b8296f87d572"},
+    {file = "botocore-1.20.14.tar.gz", hash = "sha256:2a07533de92603607c8b594ff92647f5d5a39e75f66c9476ccd30ed4d6de37ae"},
 ]
 certifi = [
     {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
@@ -1134,8 +1134,8 @@ pygments = [
     {file = "Pygments-2.8.0.tar.gz", hash = "sha256:37a13ba168a02ac54cc5891a42b1caec333e59b66addb7fa633ea8a6d73445c0"},
 ]
 pylint = [
-    {file = "pylint-2.7.0-py3-none-any.whl", hash = "sha256:3ea3926700db399765db1faf53860f11e4e981a090646e9eacd01ca78e020579"},
-    {file = "pylint-2.7.0.tar.gz", hash = "sha256:2e0c6749d809985e4f181c336a8f89b2b797340d8049160bf95f35a3f0ecf6fc"},
+    {file = "pylint-2.7.1-py3-none-any.whl", hash = "sha256:a251b238db462b71d25948f940568bb5b3ae0e37dbaa05e10523f54f83e6cc7e"},
+    {file = "pylint-2.7.1.tar.gz", hash = "sha256:81ce108f6342421169ea039ff1f528208c99d2e5a9c4ca95cfc5291be6dfd982"},
 ]
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
