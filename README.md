@@ -24,6 +24,7 @@ PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pa
   - Process pandas DataFrame from CLI without wrting Python scripts
   - Support multiple configuration file formats: YAML, JSON, Jsonnet
   - Read / write data files in the following formats: CSV, TSV, JSONL
+  - Import / export data with multiple protocols: S3 / Databse (MySQL, Postgres, SQLite, ...) / HTTP(S)
   - Extensible pipeline and data readers / writers
 
 
@@ -70,7 +71,7 @@ pipeline:
 $ pdp build config.yml pipeline.pkl --input-file https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/train.csv
 ```
 
-3. Apply fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, processed DataFrame will be exported as the JSONL format.
+3. Apply the fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, the processed DataFrame will be exported as the JSON-Lines format.
 ```
 $ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/test.csv --output-file processed_test.jsonl
 ```
@@ -80,7 +81,7 @@ $ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixtur
 $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 ```
 
-5. It is possible to change parameters via command line:
+5. It is possible to override or add parameters via command line:
 ```
 pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 ```
@@ -90,13 +91,13 @@ pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 PdpCLI automatically detects a suitable data reader / writer based on the file name.
 If you need to use the other data reader / writer, add `reader` or `writer` configs to `config.yml`.
 The following config is an exmaple to use SQL data reader.
-SQL reader fetches records from the specified database and convert them to pandas DataFrame.
+SQL reader fetches records from the specified database and converts them into a pandas DataFrame.
 ```yaml
 reader:
     type: sql
     dsn: postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@your.posgres.server/your_database
 ```
-The config file is interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}` is interpolated by an environment variable.
+The config file is interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}`s are interpolated by environment variables.
 
 Prepare yuor SQL file `query.sql` to fetch data from the database:
 ```sql
@@ -111,11 +112,11 @@ $ POSTGRES_USER=user POSTGRES_PASSWORD=password pdp apply config.yml query.sql
 
 ### Plugins
 
-By using plugins, you can extend PdpCLI. The plugin feature enables you to use your own pipeline stages, data reader / writer and commands.
+By using plugins, you can extend PdpCLI. The plugin feature enables you to use your own pipeline stages, data readers / writers and commands.
 
 #### Add a new stage
 
-1. Write your plugin script `mypdp.py` like the following. `PrintStage` just shows the DataFrame on stdout.
+1. Write your plugin script `mypdp.py` like below. `Stage.register("<stage-name>")` registers your pipeline stages, and you can specify these stages by writing `type: <stage-name>` in your config file.
 ```python
 import pdpcli
 
@@ -144,7 +145,7 @@ pipeline:
         ...
 ```
 
-2. Execute command with `--module mypdp` and you can see the DataFrame after `drop_columns`.
+2. Execute command with `--module mypdp` and you can see the processed DataFrame after running `drop_columns`.
 ```
 $ pdp apply config.yml test.csv --module mypdp
 ```
@@ -171,12 +172,12 @@ class GreetCommand(pdpcli.Subcommand):
 
 ```
 
-2. To register this command, you need to create the`.pdpcli_plugins` file. Due to the module import order, the `--module` option is unavailable for command registration.
+2. To register this command, you need to create the`.pdpcli_plugins` file which module names are listed in for each line. Due to the module import order, the `--module` option is unavailable for the command registration.
 ```
 $ echo "mypdp" > .pdpcli_plugins
 ```
 
-3. Run the following command and get the message like below. By using the `.pdpcli_plugins` file, it is unnecessary to enter the `--module` option for each execution.
+3. Run the following command and get the message like below. By using the `.pdpcli_plugins` file, it is is not needed to add the `--module` option to a command line for each execution.
 ```
 $ pdp greet --name altescy
 Hello, altescy!
