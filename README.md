@@ -23,7 +23,7 @@ PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pa
 ### Features
   - Process pandas DataFrame from CLI without wrting Python scripts
   - Support multiple configuration file formats: YAML, JSON, Jsonnet
-  - Read / write data files in the following formats: CSV, TSV, JSONL
+  - Read / write data files in the following formats: CSV, TSV, JSON, JSONL, pickled DataFrame
   - Import / export data with multiple protocols: S3 / Databse (MySQL, Postgres, SQLite, ...) / HTTP(S)
   - Extensible pipeline and data readers / writers
 
@@ -66,7 +66,7 @@ pipeline:
       max_features: 10
 ```
 
-2. Build a pipeline by training on `train.csv`. The following command generage a pickled pipeline file `pipeline.pkl` after training. If you specify URL for file path, it will be automatically downloaded and cached.
+2. Build a pipeline by training on `train.csv`. The following command generages a pickled pipeline file `pipeline.pkl` after training. If you specify a URL of  file path, it will be automatically downloaded and cached.
 ```
 $ pdp build config.yml pipeline.pkl --input-file https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/train.csv
 ```
@@ -81,7 +81,7 @@ $ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixtur
 $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 ```
 
-5. It is possible to override or add parameters via command line:
+5. It is possible to override or add parameters by adding command line arguments:
 ```
 pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 ```
@@ -89,7 +89,7 @@ pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 ### Data Reader / Writer
 
 PdpCLI automatically detects a suitable data reader / writer based on the file name.
-If you need to use the other data reader / writer, add `reader` or `writer` configs to `config.yml`.
+If you need to use the other data reader / writer, add a `reader` or `writer` config to `config.yml`.
 The following config is an exmaple to use SQL data reader.
 SQL reader fetches records from the specified database and converts them into a pandas DataFrame.
 ```yaml
@@ -112,7 +112,7 @@ $ POSTGRES_USER=user POSTGRES_PASSWORD=password pdp apply config.yml query.sql
 
 ### Plugins
 
-By using plugins, you can extend PdpCLI. The plugin feature enables you to use your own pipeline stages, data readers / writers and commands.
+By using plugins, you can extend PdpCLI. This plugin feature enables you to use your own pipeline stages, data readers / writers and commands.
 
 #### Add a new stage
 
@@ -172,7 +172,7 @@ class GreetCommand(pdpcli.Subcommand):
 
 ```
 
-2. To register this command, you need to create the`.pdpcli_plugins` file which module names are listed in for each line. Due to the module import order, the `--module` option is unavailable for the command registration.
+2. To register this command, you need to create the `.pdpcli_plugins` file which module names are listed in for each line. Due to the module import order, the `--module` option is unavailable for the command registration.
 ```
 $ echo "mypdp" > .pdpcli_plugins
 ```
