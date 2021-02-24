@@ -1,8 +1,9 @@
-from typing import Any, IO, Iterator, Tuple, Union
+from typing import Any, Callable, Dict, IO, Iterator, List, Tuple, Union
 from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlparse
 import hashlib
+import inspect
 import logging
 import os
 import re
@@ -22,6 +23,27 @@ logger = logging.getLogger(__name__)
 def camel_to_snake(s: str) -> str:
     underscored = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', underscored).lower()
+
+
+def get_args_list(func: Callable) -> List[str]:
+    signature = inspect.signature(func)
+    return list(signature.parameters.keys())
+
+
+def filter_kwargs(
+    func: Callable,
+    kwargs: Dict[str, Any],
+    ignored_args: List[str] = None,
+) -> Dict[str, Any]:
+    if ignored_args is None:
+        ignored_args = ["self"]
+    args = get_args_list(func)
+    valid_kwargs = {
+        key: value
+        for key, value in kwargs.items()
+        if key in args and key not in ignored_args
+    }
+    return valid_kwargs
 
 
 def get_file_ext(file_path: Union[str, Path]) -> str:

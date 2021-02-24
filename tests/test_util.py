@@ -10,6 +10,14 @@ def test_camel_to_snake():
     assert processed == "this_is_test_text"
 
 
+def test_get_args_list():
+    def func(a, b):
+        return a, b
+
+    args = util.get_args_list(func)
+    assert args == ["a", "b"]
+
+
 def test_cached_path():
     url = "https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/data.csv"
 
