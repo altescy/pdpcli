@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Union
 from pathlib import Path
 import os
 
@@ -11,7 +12,7 @@ from pdpcli.exceptions import ConfigurationError
 
 
 class DataReader(RegistrableWithFile):
-    def read(self, file_path: Path) -> pandas.DataFrame:
+    def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         raise NotImplementedError
 
 
@@ -21,7 +22,7 @@ class CsvDataReader(DataReader):
         self._args = args
         self._kwargs = kwargs
 
-    def read(self, file_path: Path) -> pandas.DataFrame:
+    def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
         df = pandas.read_csv(file_path, *self._args, **self._kwargs)
         return df
@@ -40,7 +41,7 @@ class JsonDataReader(DataReader):
         self._args = args
         self._kwargs = kwargs
 
-    def read(self, file_path: Path) -> pandas.DataFrame:
+    def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
         df = pandas.read_json(file_path, *self._args, **self._kwargs)
         return df
@@ -60,7 +61,7 @@ class PickleDataReader(DataReader):
         self._args = args
         self._kwargs = kwargs
 
-    def read(self, file_path: Path) -> pandas.DataFrame:
+    def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
         df = pandas.read_pickle(file_path, *self._args, **self._kwargs)
         return df
@@ -77,7 +78,7 @@ class SqlDataReader(DataReader):
         self._dsn = dsn
         self._kwargs = kwargs
 
-    def read(self, file_path: Path) -> pandas.DataFrame:
+    def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         with util.open_file(file_path) as fp:
             query = fp.read()
         engine = create_engine(self._dsn)

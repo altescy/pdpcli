@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Union
 from pathlib import Path
 import os
 
@@ -10,7 +11,7 @@ from pdpcli.registrable import RegistrableWithFile
 
 
 class DataWriter(RegistrableWithFile):
-    def write(self, df: pandas.DataFrame, file_path: Path) -> None:
+    def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         raise NotImplementedError
 
 
@@ -21,7 +22,7 @@ class CsvDataWriter(DataWriter):
         self._kwargs = {"index": False}
         self._kwargs.update(kwargs)
 
-    def write(self, df: pandas.DataFrame, file_path: Path) -> None:
+    def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         df.to_csv(file_path, *self._args, **self._kwargs)
 
 
@@ -38,7 +39,7 @@ class JsonDataWriter(DataWriter):
         self._args = args
         self._kwargs = kwargs
 
-    def write(self, df: pandas.DataFrame, file_path: Path) -> None:
+    def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         df.to_json(file_path, *self._args, **self._kwargs)
 
 
@@ -56,7 +57,7 @@ class PickleDataWriter(DataWriter):
         self._args = args
         self._kwargs = kwargs
 
-    def write(self, df: pandas.DataFrame, file_path: Path) -> None:
+    def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         df.to_pickle(file_path, *self._args, **self._kwargs)
 
 
@@ -71,7 +72,7 @@ class SqlDataWriter(DataWriter):
         self._dsn = dsn
         self._kwargs = kwargs
 
-    def write(self, df: pandas.DataFrame, file_path: Path) -> None:
+    def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         table_name = str(file_path)
         engine = create_engine(self._dsn, echo=False)
         with engine.begin() as connection:
