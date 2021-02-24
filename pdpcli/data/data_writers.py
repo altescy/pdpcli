@@ -32,7 +32,8 @@ class CsvDataWriter(DataWriter):
             self._kwargs["index"] = False
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        df.to_csv(file_path, **self._kwargs)
+        with util.open_file(file_path, "w") as fp:
+            df.to_csv(fp, **self._kwargs)
 
 
 @DataWriter.register("tsv", extensions=[".tsv"])
@@ -54,7 +55,8 @@ class JsonDataWriter(DataWriter):
                           f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        df.to_json(file_path, **self._kwargs)
+        with util.open_file(file_path, "w") as fp:
+            df.to_json(fp, **self._kwargs)
 
 
 @DataWriter.register("jsonl", extensions=[".jsonl"])
@@ -77,7 +79,8 @@ class PickleDataWriter(DataWriter):
                           f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        df.to_pickle(file_path, **self._kwargs)
+        with util.open_file(file_path, "wb") as fp:
+            df.to_pickle(fp, **self._kwargs)
 
 
 @DataWriter.register("sql")
