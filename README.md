@@ -71,7 +71,7 @@ pipeline:
 $ pdp build config.yml pipeline.pkl --input-file https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/train.csv
 ```
 
-3. Apply the fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In the following example, the processed DataFrame will be exported as the JSON-Lines format.
+3. Apply the fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In this example, the processed DataFrame will be exported as the JSON-Lines format.
 ```
 $ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/test.csv --output-file processed_test.jsonl
 ```
