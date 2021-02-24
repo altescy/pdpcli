@@ -1,4 +1,4 @@
-from typing import Any, IO, Iterator, Union
+from typing import Any, IO, Iterator, Tuple, Union
 from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import urlparse
@@ -29,6 +29,16 @@ def get_file_ext(file_path: Union[str, Path]) -> str:
     return file_path.suffix
 
 
+def get_parent_path_and_filename(file_path: str) -> Tuple[str, str]:
+    splitted = str(file_path).rsplit("/", 1)
+    if len(splitted) == 2:
+        parent, name = splitted
+    else:
+        parent = "./"
+        name = str(file_path)
+    return parent, name
+
+
 def cached_path(url_or_filename: Union[str, Path],
                 cache_dir: Union[str, Path] = None) -> Path:
     cache_dir = Path(cache_dir or CACHE_DIRRECTORY)
@@ -38,7 +48,7 @@ def cached_path(url_or_filename: Union[str, Path],
     parsed = urlparse(str(url_or_filename))
 
     if parsed.scheme in ("", "file", "osfs"):
-        return Path(url_or_filename)
+        return Path(parsed.path)
 
     cache_path = cache_dir / _get_cached_filename(url_or_filename)
     if cache_path.exists():
@@ -50,6 +60,10 @@ def cached_path(url_or_filename: Union[str, Path],
     try:
         with open_file(url_or_filename, "r+b") as fp:
             cache_fp.write(fp.read())
+    except:
+        cache_fp.close()
+        os.remove(cache_path)
+        raise
     finally:
         cache_fp.close()
 
@@ -63,30 +77,34 @@ def open_file(file_path: Union[str, Path],
     parsed = urlparse(str(file_path))
 
     if parsed.scheme in ("http", "https"):
-        if not mode.startswith("r"):
-            raise ValueError(f"invalid mode for http(s): {mode}")
-
         url = str(file_path)
-        temp_file = tempfile.NamedTemporaryFile(delete=False)
-
-        try:
-            _http_get(url, temp_file)
-            temp_file.close()
-            with open(temp_file.name, mode) as fp:
-                yield fp
-        finally:
-            os.remove(temp_file.name)
-    else:
-        with open_file_with_fs(file_path, **kwargs) as fp:
+        with open_file_with_http(url, mode=mode) as fp:
             yield fp
+
+    else:
+        with open_file_with_fs(file_path, mode=mode, **kwargs) as fp:
+            yield fp
+
+
+@contextmanager
+def open_file_with_http(url: str, mode="r", **kwargs) -> Iterator[IO[Any]]:
+    if not mode.startswith("r"):
+        raise ValueError(f"invalid mode for http(s): {mode}")
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    try:
+        _http_get(url, temp_file)
+        temp_file.close()
+        with open(temp_file.name, mode, **kwargs) as fp:
+            yield fp
+    finally:
+        os.remove(temp_file.name)
 
 
 @contextmanager
 def open_file_with_fs(file_path: Union[str, Path], *args,
                       **kwargs) -> Iterator[IO[Any]]:
-    file_path = Path(file_path)
-    parent = str(file_path.parent)
-    name = str(file_path.name)
+    file_path = str(file_path)
+    parent, name = get_parent_path_and_filename(file_path)
 
     with open_fs(parent) as fs:
         with fs.open(name, *args, **kwargs) as fp:

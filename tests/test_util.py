@@ -1,4 +1,5 @@
 import tempfile
+from pathlib import Path
 
 from pdpcli import util
 
@@ -15,3 +16,4 @@ def test_cached_path():
     with tempfile.TemporaryDirectory() as cache_dir:
         file_path = util.cached_path(url, cache_dir=cache_dir)
         assert file_path.is_file()
+        assert file_path.parent == Path(cache_dir)
