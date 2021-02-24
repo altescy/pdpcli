@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas
 
-from pdpcli.data.data_reader import (
+from pdpcli.data.data_readers import (
     CsvDataReader,
     TsvDataReader,
     JsonLinesDataReader,

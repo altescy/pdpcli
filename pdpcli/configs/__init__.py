@@ -1,5 +1,5 @@
-from pdpcli.configs.builder import ConfigBuilder
-from pdpcli.configs.config_reader import (
+from pdpcli.configs.config_builder import ConfigBuilder
+from pdpcli.configs.config_readers import (
     ConfigReader,
     YamlConfigReader,
     JsonConfigReader,

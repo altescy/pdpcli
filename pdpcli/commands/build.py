@@ -5,10 +5,10 @@ import pickle
 import pdpipe  # pylint: disable=unused-import
 
 from pdpcli.configs import ConfigBuilder
-from pdpcli.commands.subcommand import Subcommand
-from pdpcli.data.data_reader import DataReader
+from pdpcli.data import DataReader
 from pdpcli.exceptions import ConfigurationError
-from pdpcli.configs.config_reader import ConfigReader
+from pdpcli.configs import ConfigReader
+from pdpcli.commands.subcommand import Subcommand
 
 logger = logging.getLogger(__name__)
 

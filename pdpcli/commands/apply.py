@@ -8,11 +8,10 @@ from typing import List, Optional, Tuple, Union
 import pdpipe
 
 from pdpcli import util
-from pdpcli.configs import ConfigBuilder
+from pdpcli.configs import ConfigBuilder, ConfigReader
 from pdpcli.data import DataReader, DataWriter
 from pdpcli.exceptions import ConfigurationError
 from pdpcli.commands.subcommand import Subcommand
-from pdpcli.configs.config_reader import ConfigReader
 
 logger = logging.getLogger(__name__)
 

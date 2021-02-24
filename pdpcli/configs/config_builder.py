@@ -6,8 +6,8 @@ import colt
 
 from pdpcli.stages import Stage, PassThroughStage
 from pdpcli.settings import DEFAULT_COLT_SETTING
-from pdpcli.data.data_reader import DataReader
-from pdpcli.data.data_writer import DataWriter
+from pdpcli.data.data_readers import DataReader
+from pdpcli.data.data_writers import DataWriter
 
 
 class ConfigBuilder:
