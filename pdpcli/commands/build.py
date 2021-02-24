@@ -4,10 +4,10 @@ import pickle
 
 import pdpipe  # pylint: disable=unused-import
 
-from pdpcli.configs import ConfigBuilder
+from pdpcli.configs import ConfigBuilder, ConfigReader
 from pdpcli.data import DataReader
 from pdpcli.exceptions import ConfigurationError
-from pdpcli.configs import ConfigReader
+from pdpcli.util import open_file
 from pdpcli.commands.subcommand import Subcommand
 
 logger = logging.getLogger(__name__)
@@ -67,7 +67,7 @@ class BuildCommand(Subcommand):
             pipeline.fit(df)
 
         logger.info("Save pipeline to: %s", args.pipeline)
-        with open(args.pipeline, "wb") as fp:
+        with open_file(args.pipeline, "wb") as fp:
             pickle.dump(pipeline, fp)
 
         logger.info("Done")
