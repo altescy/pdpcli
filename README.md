@@ -40,7 +40,7 @@ $ pip install "pdpcli[all]"
 
 ### Basic Usage
 
-1. Write a pipeline config file `config.yml` like below. The `type` fields under `pipeline` correspond to the snake-cased class names of the [`PdpipelineStages`](https://pdpipe.github.io/pdpipe/doc/pdpipe/#types-of-pipeline-stages). The other fields such as `stage` and `columns` are the parameters of the `__init__` methods of the corresponging classes. Internally, this configuration file is converted to Python objects by [`colt`](https://github.com/altescy/colt).
+1. Write a pipeline config file `config.yml` like below. The `type` fields under `pipeline` correspond to the snake-cased class names of the [`PdpipelineStages`](https://pdpipe.github.io/pdpipe/doc/pdpipe/#types-of-pipeline-stages). Other fields such as `stage` and `columns` are the parameters of the `__init__` methods of the corresponging classes. Internally, this configuration file is converted to Python objects by [`colt`](https://github.com/altescy/colt).
 
 ```yaml
 pipeline:
@@ -71,12 +71,12 @@ pipeline:
 $ pdp build config.yml pipeline.pkl --input-file https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/train.csv
 ```
 
-3. Apply the fitted pipeline to `test.csv` and get output of the processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In this example, the processed DataFrame will be exported as the JSON-Lines format.
+3. Apply the fitted pipeline to `test.csv` and get output of a processed file `processed_test.jsonl` by the following command. PdpCLI automatically detects the output file format based on the file name. In this example, the processed DataFrame will be exported as the JSON-Lines format.
 ```
 $ pdp apply pipeline.pkl https://github.com/altescy/pdpcli/raw/main/tests/fixture/data/test.csv --output-file processed_test.jsonl
 ```
 
-4. You can also directly run the pipeline from a config file if you don't need to fit the pipeline.
+4. You can also directly run the pipeline from a config file without fitting pipeline.
 ```
 $ pdp apply config.yml test.csv --output-file processed_test.jsonl
 ```
@@ -88,7 +88,7 @@ pdp apply config.yml test.csv pipeline.stages.drop_columns.column=name
 
 ### Data Reader / Writer
 
-PdpCLI automatically detects a suitable data reader / writer based on the file name.
+PdpCLI automatically detects a suitable data reader / writer based on a given file name.
 If you need to use the other data reader / writer, add a `reader` or `writer` config to `config.yml`.
 The following config is an exmaple to use SQL data reader.
 SQL reader fetches records from the specified database and converts them into a pandas DataFrame.
@@ -97,7 +97,7 @@ reader:
     type: sql
     dsn: postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@your.posgres.server/your_database
 ```
-The config file is interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}`s are interpolated by environment variables.
+Config files are interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}` is interpolated by environment variables.
 
 Prepare yuor SQL file `query.sql` to fetch data from the database:
 ```sql
@@ -152,7 +152,7 @@ $ pdp apply config.yml test.csv --module mypdp
 
 #### Add a new command
 
-You can also add new coomands not only stages.
+You can also add new commands not only stages.
 
 1. Add the following script to `mypdp.py`. This `greet` command prints out a greeting message with your name.
 ```python
@@ -172,12 +172,12 @@ class GreetCommand(pdpcli.Subcommand):
 
 ```
 
-2. To register this command, you need to create the `.pdpcli_plugins` file which module names are listed in for each line. Due to the module import order, the `--module` option is unavailable for the command registration.
+2. To register this command, you need to create the `.pdpcli_plugins` file in which module names are listed for each line. Due to module importing order, the `--module` option is unavailable for command registration.
 ```
 $ echo "mypdp" > .pdpcli_plugins
 ```
 
-3. Run the following command and get the message like below. By using the `.pdpcli_plugins` file, it is is not needed to add the `--module` option to a command line for each execution.
+3. Run the following command and get a message like below. By using the `.pdpcli_plugins` file, it is is not needed to add the `--module` option to a command line for each execution.
 ```
 $ pdp greet --name altescy
 Hello, altescy!
