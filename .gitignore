@@ -19,6 +19,11 @@ __pycache__
 .mypy_cache
 .pytest_cache/
 
-# env file
+
+# env files
 .envrc
 .venv
+
+
+# editor files
+.vim
