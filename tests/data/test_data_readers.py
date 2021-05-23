@@ -4,10 +4,10 @@ import pandas
 
 from pdpcli.data.data_readers import (
     CsvDataReader,
-    TsvDataReader,
     JsonLinesDataReader,
     PickleDataReader,
     SqlDataReader,
+    TsvDataReader,
 )
 
 FIXTURE_DIR = Path("./tests/fixture/")

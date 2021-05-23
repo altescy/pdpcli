@@ -8,10 +8,10 @@ from typing import List, Optional, Tuple, Union
 import pdpipe
 
 from pdpcli import util
+from pdpcli.commands.subcommand import Subcommand
 from pdpcli.configs import ConfigBuilder, ConfigReader
 from pdpcli.data import DataReader, DataWriter
 from pdpcli.exceptions import ConfigurationError
-from pdpcli.commands.subcommand import Subcommand
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +64,7 @@ class ApplyCommand(Subcommand):
             pipeline = self._load_pipeline_from_pickle(args.pipeline)
             reader, writer = None, None
         else:
-            pipeline, reader, writer = self._build_config(
-                args.pipeline, args.overrides)
+            pipeline, reader, writer = self._build_config(args.pipeline, args.overrides)
 
         logger.info("Pipeline:\n%s", str(pipeline))
 
@@ -106,7 +105,8 @@ class ApplyCommand(Subcommand):
 
     @staticmethod
     def _load_pipeline_from_pickle(
-            file_path: Union[str, Path]) -> pdpipe.PdPipelineStage:
+        file_path: Union[str, Path]
+    ) -> pdpipe.PdPipelineStage:
         file_path = util.cached_path(file_path)
         with util.open_file(file_path, "rb") as fp:
             pipeline = pickle.load(fp)
@@ -115,9 +115,8 @@ class ApplyCommand(Subcommand):
     @staticmethod
     def _build_config(
         file_path: Union[str, Path],
-        overrides: List[str] = None,
-    ) -> Tuple[pdpipe.PdPipelineStage, Optional[DataReader],
-               Optional[DataWriter]]:
+        overrides: Optional[List[str]] = None,
+    ) -> Tuple[pdpipe.PdPipelineStage, Optional[DataReader], Optional[DataWriter]]:
         config_reader = ConfigReader.from_path(file_path)
         if config_reader is None:
             raise ConfigurationError("Failed to infer config reader.")

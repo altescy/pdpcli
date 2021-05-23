@@ -1,15 +1,16 @@
 from __future__ import annotations
-from typing import Union
-from pathlib import Path
+
 import os
 import warnings
+from pathlib import Path
+from typing import Any, Optional, Union
 
 import pandas
 from sqlalchemy import create_engine
 
 from pdpcli import util
-from pdpcli.registrable import RegistrableWithFile
 from pdpcli.exceptions import ConfigurationError
+from pdpcli.registrable import RegistrableWithFile
 
 
 class DataReader(RegistrableWithFile):
@@ -19,14 +20,13 @@ class DataReader(RegistrableWithFile):
 
 @DataReader.register("csv", extensions=[".csv"])
 class CsvDataReader(DataReader):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.read_csv, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
@@ -36,21 +36,20 @@ class CsvDataReader(DataReader):
 
 @DataReader.register("tsv", extensions=[".tsv"])
 class TsvDataReader(CsvDataReader):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         kwargs["sep"] = "\t"
         super().__init__(*args, **kwargs)
 
 
 @DataReader.register("json", extensions=[".json"])
 class JsonDataReader(DataReader):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.read_json, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
@@ -60,7 +59,7 @@ class JsonDataReader(DataReader):
 
 @DataReader.register("jsonl", extensions=[".jsonl"])
 class JsonLinesDataReader(JsonDataReader):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         kwargs["orient"] = "records"
         kwargs["lines"] = True
         super().__init__(**kwargs)
@@ -68,14 +67,13 @@ class JsonLinesDataReader(JsonDataReader):
 
 @DataReader.register("pickle", extensions=[".pkl", ".pickle"])
 class PickleDataReader(DataReader):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.read_pickle, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         file_path = util.cached_path(file_path)
@@ -87,7 +85,7 @@ class PickleDataReader(DataReader):
 class SqlDataReader(DataReader):
     DSN_KEY = "PDPCLI_SQL_DATA_READER_DSN"
 
-    def __init__(self, dsn: str = None, **kwargs) -> None:
+    def __init__(self, dsn: Optional[str] = None, **kwargs: Any) -> None:
         dsn = dsn or os.environ.get(self.DSN_KEY)
         if dsn is None:
             raise ConfigurationError("DSN not specifiled")
@@ -98,8 +96,7 @@ class SqlDataReader(DataReader):
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
         with util.open_file(file_path) as fp:

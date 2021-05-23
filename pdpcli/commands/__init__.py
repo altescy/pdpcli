@@ -1,6 +1,5 @@
-from typing import Set
 import argparse
-import sys
+from typing import Optional
 
 import colt
 
@@ -9,8 +8,8 @@ from pdpcli.commands.subcommand import Subcommand
 from pdpcli.plugins import import_plugins
 
 
-def create_parser(prog: str = None) -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(usage='%(prog)s', prog=prog)
+def create_parser(prog: Optional[str] = None) -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(usage="%(prog)s", prog=prog)
     parser.add_argument(
         "--version",
         action="version",
@@ -33,7 +32,7 @@ def create_parser(prog: str = None) -> argparse.ArgumentParser:
     return parser
 
 
-def main(prog: str = None):
+def main(prog: Optional[str] = None) -> None:
     import_plugins()
 
     parser = create_parser(prog)

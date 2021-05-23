@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from pdpcli.configs.config_readers import (
-    YamlConfigReader,
     JsonConfigReader,
     JsonnetConfigReader,
+    YamlConfigReader,
 )
 
 FIXTURE_PATH = Path("tests/fixture")

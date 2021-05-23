@@ -1,18 +1,19 @@
 import os
-from typing import Set, Iterator
+from pathlib import Path
+from typing import Iterator, Set, Union
 
 import colt
 
-from pdpcli.settings import LOCAL_PLUGINS_FILENAME, GLOBAL_PLUGINS_FILENAME
+from pdpcli.settings import GLOBAL_PLUGINS_FILENAME, LOCAL_PLUGINS_FILENAME
 
 
-def iter_plugins(file_path: str) -> Iterator[str]:
+def iter_plugins(file_path: Union[str, Path]) -> Iterator[str]:
     with open(file_path) as fp:
         for module_name in fp:
             yield module_name.strip()
 
 
-def import_plugins():
+def import_plugins() -> None:
     plugins: Set[str] = set()
 
     if os.path.isfile(LOCAL_PLUGINS_FILENAME):

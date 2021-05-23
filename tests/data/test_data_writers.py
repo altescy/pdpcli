@@ -1,15 +1,15 @@
 import os
-import tempfile
 import sqlite3
+import tempfile
 
 import pandas
 
 from pdpcli.data.data_writers import (
     CsvDataWriter,
-    TsvDataWriter,
     JsonLinesDataWriter,
     PickleDataWriter,
     SqlDataWriter,
+    TsvDataWriter,
 )
 
 
@@ -64,9 +64,7 @@ def test_jsonl_data_reader():
 
         assert os.path.isfile(temp_file.name)
 
-        exported_df = pandas.read_json(temp_file.name,
-                                       orient="records",
-                                       lines=True)
+        exported_df = pandas.read_json(temp_file.name, orient="records", lines=True)
         assert "name" in exported_df.columns
         assert "age" in exported_df.columns
     finally:

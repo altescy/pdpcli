@@ -14,11 +14,13 @@ def test_build_without_input_file():
         pipeline_path = tempdir / "pipeline.pkl"
 
         parser = create_parser()
-        args = parser.parse_args([
-            "build",
-            str(config_path),
-            str(pipeline_path),
-        ])
+        args = parser.parse_args(
+            [
+                "build",
+                str(config_path),
+                str(pipeline_path),
+            ]
+        )
 
         args.func(args)
 
@@ -35,13 +37,15 @@ def test_build_with_input_file():
         pipeline_path = tempdir / "pipeline.pkl"
 
         parser = create_parser()
-        args = parser.parse_args([
-            "build",
-            str(config_path),
-            str(pipeline_path),
-            "-i",
-            str(input_file),
-        ])
+        args = parser.parse_args(
+            [
+                "build",
+                str(config_path),
+                str(pipeline_path),
+                "-i",
+                str(input_file),
+            ]
+        )
 
         args.func(args)
 

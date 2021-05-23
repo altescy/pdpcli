@@ -1,8 +1,9 @@
 from __future__ import annotations
-from typing import Union
-from pathlib import Path
+
 import os
 import warnings
+from pathlib import Path
+from typing import Any, Optional, Union
 
 import pandas
 from sqlalchemy import create_engine
@@ -19,14 +20,13 @@ class DataWriter(RegistrableWithFile):
 
 @DataWriter.register("csv", extensions=[".csv"])
 class CsvDataWriter(DataWriter):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.DataFrame.to_csv, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
         if "index" not in self._kwargs:
             self._kwargs["index"] = False
@@ -38,21 +38,20 @@ class CsvDataWriter(DataWriter):
 
 @DataWriter.register("tsv", extensions=[".tsv"])
 class TsvDataWriter(CsvDataWriter):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         kwargs["sep"] = "\t"
         super().__init__(*args, **kwargs)
 
 
 @DataWriter.register("json", extensions=[".json"])
 class JsonDataWriter(DataWriter):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.DataFrame.to_json, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         with util.open_file(file_path, "w") as fp:
@@ -61,7 +60,7 @@ class JsonDataWriter(DataWriter):
 
 @DataWriter.register("jsonl", extensions=[".jsonl"])
 class JsonLinesDataWriter(JsonDataWriter):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         kwargs["orient"] = "records"
         kwargs["lines"] = True
         super().__init__(**kwargs)
@@ -69,14 +68,13 @@ class JsonLinesDataWriter(JsonDataWriter):
 
 @DataWriter.register("pickle", extensions=[".pkl", ".pickle"])
 class PickleDataWriter(DataWriter):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._kwargs = util.filter_kwargs(pandas.DataFrame.to_pickle, kwargs)
 
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         with util.open_file(file_path, "wb") as fp:
@@ -87,7 +85,11 @@ class PickleDataWriter(DataWriter):
 class SqlDataWriter(DataWriter):
     DSN_KEY = "PDPCLI_SQL_DATA_WRITER_DSN"
 
-    def __init__(self, dsn: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        dsn: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         dsn = dsn or os.environ.get(self.DSN_KEY)
         if dsn is None:
             raise ConfigurationError("DSN not specifiled")
@@ -98,8 +100,7 @@ class SqlDataWriter(DataWriter):
         given_args = set(kwargs)
         valid_args = set(self._kwargs)
         if set(given_args) != set(valid_args):
-            warnings.warn("some arguments are ignored: "
-                          f"{given_args - valid_args}")
+            warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
         table_name = str(file_path)

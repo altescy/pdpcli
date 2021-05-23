@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Callable, List, Optional, Type
+
 import argparse
+from typing import Callable, List, Optional, Type
 
 
 class Subcommand:
@@ -8,7 +9,9 @@ class Subcommand:
     subcommands: List["Subcommand"] = []
 
     @classmethod
-    def register(cls, name: str, description: str, help: str) -> Callable:  # pylint: disable=redefined-builtin
+    def register(
+        cls, name: str, description: str, help: str
+    ) -> Callable[[Type[Subcommand]], Type[Subcommand]]:
         def decorator(T: Type[Subcommand]) -> Type[Subcommand]:
             subcommand = T(name, description, help)
             Subcommand.subcommands.append(subcommand)
@@ -33,7 +36,9 @@ class Subcommand:
             raise RuntimeError("parser is not set")
         return self._parser
 
-    def setup(self, subparsers: argparse._SubParsersAction) -> None:  # pylint: disable=protected-access
+    def setup(
+        self, subparsers: argparse._SubParsersAction
+    ) -> None:  # pylint: disable=protected-access
         self._parser = subparsers.add_parser(
             self._name,
             description=self._description,

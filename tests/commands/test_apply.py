@@ -17,13 +17,15 @@ def test_apply_from_config():
         output_file = tempdir / "output.csv"
 
         parser = create_parser()
-        args = parser.parse_args([
-            "apply",
-            str(config_path),
-            str(input_file),
-            "-o",
-            str(output_file),
-        ])
+        args = parser.parse_args(
+            [
+                "apply",
+                str(config_path),
+                str(input_file),
+                "-o",
+                str(output_file),
+            ]
+        )
 
         args.func(args)
 
@@ -47,13 +49,15 @@ def test_apply_from_pickled_model():
         output_file = tempdir / "output.csv"
 
         parser = create_parser()
-        args = parser.parse_args([
-            "apply",
-            str(pipeline_path),
-            str(input_file),
-            "-o",
-            str(output_file),
-        ])
+        args = parser.parse_args(
+            [
+                "apply",
+                str(pipeline_path),
+                str(input_file),
+                "-o",
+                str(output_file),
+            ]
+        )
 
         args.func(args)
 
@@ -77,14 +81,16 @@ def test_apply_with_cli_args():
         output_file = tempdir / "output.csv"
 
         parser = create_parser()
-        args = parser.parse_args([
-            "apply",
-            str(config_path),
-            str(input_file),
-            "pipeline.stages.drop_columns.columns=[name]",
-            "-o",
-            str(output_file),
-        ])
+        args = parser.parse_args(
+            [
+                "apply",
+                str(config_path),
+                str(input_file),
+                "pipeline.stages.drop_columns.columns=[name]",
+                "-o",
+                str(output_file),
+            ]
+        )
 
         args.func(args)
 

@@ -1,13 +1,13 @@
-from typing import cast, Any, Dict, List, Union
-from pathlib import Path
 import json
 import logging
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union, cast
 
-from omegaconf import OmegaConf, DictConfig, ListConfig
+from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from pdpcli import util
-from pdpcli.registrable import RegistrableWithFile
 from pdpcli.configs.jsonnet import load_jsonnet
+from pdpcli.registrable import RegistrableWithFile
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class ConfigReader(RegistrableWithFile):
     def read(
         self,
         file_path: Union[str, Path],
-        overrides: List[str] = None,
+        overrides: Optional[List[str]] = None,
     ) -> Union[Dict[str, Any]]:
         config = self._read(file_path)
 

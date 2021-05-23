@@ -1,4 +1,4 @@
-__version__ = '0.3.0'
+__version__ = "0.3.0"
 
-from pdpcli.stages import Stage
-from pdpcli.commands.subcommand import Subcommand
+from pdpcli.commands.subcommand import Subcommand  # noqa: F401
+from pdpcli.stages import Stage  # noqa: F401

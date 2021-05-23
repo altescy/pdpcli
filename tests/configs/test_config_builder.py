@@ -5,9 +5,7 @@ from pdpcli.stages import Stage
 
 def test_config_builder():
     config = {
-        "colt": {
-            "typekey": "!"
-        },
+        "colt": {"typekey": "!"},
         "reader": {
             "!": "csv",
         },

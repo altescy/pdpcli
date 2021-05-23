@@ -2,13 +2,13 @@ import argparse
 import logging
 import pickle
 
-import pdpipe  # pylint: disable=unused-import
+import pdpipe  # noqa: F401
 
+from pdpcli.commands.subcommand import Subcommand
 from pdpcli.configs import ConfigBuilder, ConfigReader
 from pdpcli.data import DataReader
 from pdpcli.exceptions import ConfigurationError
 from pdpcli.util import open_file
-from pdpcli.commands.subcommand import Subcommand
 
 logger = logging.getLogger(__name__)
 

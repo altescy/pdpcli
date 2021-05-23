@@ -1,13 +1,14 @@
 from __future__ import annotations
-from typing import cast, Any, Dict, Optional
+
 import copy
+from typing import Any, Dict, Optional, cast
 
 import colt
 
-from pdpcli.stages import Stage, PassThroughStage
-from pdpcli.settings import DEFAULT_COLT_SETTING
 from pdpcli.data.data_readers import DataReader
 from pdpcli.data.data_writers import DataWriter
+from pdpcli.settings import DEFAULT_COLT_SETTING
+from pdpcli.stages import PassThroughStage, Stage
 
 
 class ConfigBuilder:
@@ -16,8 +17,7 @@ class ConfigBuilder:
     @classmethod
     def build(cls, config: Dict[str, Any]) -> ConfigBuilder:
         config = {
-            key: value
-            for key, value in config.items() if key in ConfigBuilder.FIELDS
+            key: value for key, value in config.items() if key in ConfigBuilder.FIELDS
         }
 
         colt_config = copy.deepcopy(DEFAULT_COLT_SETTING)

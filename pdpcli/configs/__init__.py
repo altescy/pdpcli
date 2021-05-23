@@ -1,7 +1,7 @@
-from pdpcli.configs.config_builder import ConfigBuilder
-from pdpcli.configs.config_readers import (
+from pdpcli.configs.config_builder import ConfigBuilder  # noqa: F401
+from pdpcli.configs.config_readers import (  # noqa: F401
     ConfigReader,
-    YamlConfigReader,
     JsonConfigReader,
     JsonnetConfigReader,
+    YamlConfigReader,
 )
