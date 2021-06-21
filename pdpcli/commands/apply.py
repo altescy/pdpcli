@@ -74,7 +74,7 @@ class ApplyCommand(Subcommand):
             _, reader, writer = self._build_config(args.config, args.overrides)
 
         # Read input file
-        reader = DataReader.from_path(args.input_file)
+        reader = reader or DataReader.from_path(args.input_file)
         if reader is None:
             raise ConfigurationError("Failed to infer data reader")
         logger.info("Load input file: %s", str(args.input_file))
