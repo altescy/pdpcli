@@ -2,13 +2,13 @@ import argparse
 import logging
 import pickle
 
+import minato
 import pdpipe  # noqa: F401
 
 from pdpcli.commands.subcommand import Subcommand
 from pdpcli.configs import ConfigBuilder, ConfigReader
 from pdpcli.data import DataReader
 from pdpcli.exceptions import ConfigurationError
-from pdpcli.util import open_file
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class BuildCommand(Subcommand):
             pipeline.fit(df)
 
         logger.info("Save pipeline to: %s", args.pipeline)
-        with open_file(args.pipeline, "wb") as fp:
+        with minato.open(args.pipeline, "wb") as fp:
             pickle.dump(pipeline, fp)
 
         logger.info("Done")

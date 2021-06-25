@@ -3,9 +3,9 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, cast
 
+import minato
 from omegaconf import DictConfig, ListConfig, OmegaConf
 
-from pdpcli import util
 from pdpcli.configs.jsonnet import load_jsonnet
 from pdpcli.registrable import RegistrableWithFile
 
@@ -42,7 +42,7 @@ class YamlConfigReader(ConfigReader):
         self,
         file_path: Union[str, Path],
     ) -> Union[DictConfig, ListConfig]:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         return OmegaConf.load(file_path)
 
 
@@ -52,7 +52,7 @@ class JsonConfigReader(ConfigReader):
         self,
         file_path: Union[str, Path],
     ) -> Union[DictConfig, ListConfig]:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         with open(file_path, "r") as fp:
             jsondict = json.load(fp)
         return OmegaConf.create(jsondict)  # type: ignore
@@ -64,6 +64,6 @@ class JsonnetConfigReader(ConfigReader):
         self,
         file_path: Union[str, Path],
     ) -> Union[DictConfig, ListConfig]:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         jsondict = load_jsonnet(file_path)
         return OmegaConf.create(jsondict)

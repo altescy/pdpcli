@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Optional, Union
 
+import minato
 import pandas
 from sqlalchemy import create_engine
 
@@ -32,7 +33,7 @@ class CsvDataWriter(DataWriter):
             self._kwargs["index"] = False
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        with util.open_file(file_path, "w") as fp:
+        with minato.open(file_path, "w") as fp:
             df.to_csv(fp, **self._kwargs)
 
 
@@ -54,7 +55,7 @@ class JsonDataWriter(DataWriter):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        with util.open_file(file_path, "w") as fp:
+        with minato.open(file_path, "w") as fp:
             df.to_json(fp, **self._kwargs)
 
 
@@ -77,7 +78,7 @@ class PickleDataWriter(DataWriter):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def write(self, df: pandas.DataFrame, file_path: Union[str, Path]) -> None:
-        with util.open_file(file_path, "wb") as fp:
+        with minato.open(file_path, "wb") as fp:
             df.to_pickle(fp, **self._kwargs)
 
 

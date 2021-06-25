@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Optional, Union
 
+import minato
 import pandas
 from sqlalchemy import create_engine
 
@@ -29,7 +30,7 @@ class CsvDataReader(DataReader):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         df = pandas.read_csv(file_path, **self._kwargs)
         return df
 
@@ -52,7 +53,7 @@ class JsonDataReader(DataReader):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         df = pandas.read_json(file_path, **self._kwargs)
         return df
 
@@ -76,7 +77,7 @@ class PickleDataReader(DataReader):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
-        file_path = util.cached_path(file_path)
+        file_path = minato.cached_path(file_path)
         df = pandas.read_pickle(file_path, **self._kwargs)
         return df
 
@@ -99,7 +100,7 @@ class SqlDataReader(DataReader):
             warnings.warn("some arguments are ignored: " f"{given_args - valid_args}")
 
     def read(self, file_path: Union[str, Path]) -> pandas.DataFrame:
-        with util.open_file(file_path) as fp:
+        with minato.open(file_path) as fp:
             query = fp.read()
         engine = create_engine(self._dsn)
         with engine.connect() as connection:

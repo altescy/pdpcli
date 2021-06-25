@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
+import minato
 import pdpipe
 
 from pdpcli import util
@@ -107,8 +108,8 @@ class ApplyCommand(Subcommand):
     def _load_pipeline_from_pickle(
         file_path: Union[str, Path]
     ) -> pdpipe.PdPipelineStage:
-        file_path = util.cached_path(file_path)
-        with util.open_file(file_path, "rb") as fp:
+        file_path = minato.cached_path(file_path)
+        with minato.open(file_path, "rb") as fp:
             pipeline = pickle.load(fp)
         return pipeline
 
