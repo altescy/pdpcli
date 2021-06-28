@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy
 import pandas
@@ -10,14 +10,26 @@ from pdpcli.stages.stage import Stage
 
 @Stage.register("sklearn_predictor")
 class SklearnPredictor(Stage):
+    _DEF_SKLEARN_PREDICTOR_DESC = "SklearnPredictor with {} feature {}, target {}"
+
     def __init__(
         self,
         estimator: BaseEstimator,
         target_columns: Union[str, List[str]],
         output_columns: Union[str, List[str]],
         feature_columns: Optional[Union[str, List[str]]] = None,
+        **kwargs: Any,
     ) -> None:
-        super().__init__()
+        desc = SklearnPredictor._DEF_SKLEARN_PREDICTOR_DESC.format(
+            type(estimator).__name__,
+            feature_columns or "ALL COLUMNS",
+            target_columns,
+        )
+        super_kwargs = {
+            "desc": desc,
+        }
+        super_kwargs.update(**kwargs)
+        super().__init__(**super_kwargs)
         self._estimator = estimator
         self._feature_columns = feature_columns
         self._target_columns = target_columns
@@ -110,14 +122,25 @@ class SklearnPredictor(Stage):
 
 @Stage.register("sklearn_transformer")
 class SklearnTransformer(Stage):
+    _DEF_SKLEARN_TRANSFORMER_DESC = "Sklearn transofmer with {} column {}."
+
     def __init__(
         self,
         transformer: TransformerMixin,
         output_columns: Union[str, List[str]],
         feature_columns: Optional[Union[str, List[str]]] = None,
         drop: bool = True,
+        **kwargs: Any,
     ) -> None:
-        super().__init__()
+        desc = SklearnTransformer._DEF_SKLEARN_TRANSFORMER_DESC.format(
+            type(transformer).__name__,
+            feature_columns or "ALL COLUMNS",
+        )
+        super_kwargs = {
+            "desc": desc,
+        }
+        super_kwargs.update(**kwargs)
+        super().__init__(**super_kwargs)
         self._transformer = transformer
         self._feature_columns = feature_columns
         self._output_columns = output_columns
