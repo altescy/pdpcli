@@ -24,6 +24,23 @@ def test_sklearn_predictor() -> None:
     assert list(output.columns) == ["a", "b", "c", "d"]
 
 
+def test_sklearn_predictor_without_feature_columns() -> None:
+    df = pandas.DataFrame(
+        data=numpy.random.normal(size=(64, 2)),
+        columns=["a", "b"],
+    )
+    df["c"] = ((df["a"] + df["b"]) > 0).apply(int)
+
+    stage = SklearnPredictor(
+        estimator=LogisticRegression(),
+        target_columns="c",
+        output_columns="d",
+    )
+    output = stage.apply(df)
+
+    assert list(output.columns) == ["a", "b", "c", "d"]
+
+
 def test_sklearn_transformer_with_tfidf_vectorizer() -> None:
     df = pandas.DataFrame()
     df["text"] = ["This is a first sentence.", "This is a second sentence."]

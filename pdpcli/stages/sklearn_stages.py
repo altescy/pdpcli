@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy
 import pandas
@@ -13,9 +13,9 @@ class SklearnPredictor(Stage):
     def __init__(
         self,
         estimator: BaseEstimator,
-        feature_columns: Union[str, List[str]],
         target_columns: Union[str, List[str]],
         output_columns: Union[str, List[str]],
+        feature_columns: Optional[Union[str, List[str]]] = None,
     ) -> None:
         super().__init__()
         self._estimator = estimator
@@ -24,26 +24,50 @@ class SklearnPredictor(Stage):
         self._output_columns = output_columns
 
     def _prec(self, df: pandas.DataFrame) -> bool:
-        feature_columns = self._feature_columns
         target_columns = self._target_columns
-        if isinstance(feature_columns, str):
-            feature_columns = [feature_columns]
         if isinstance(target_columns, str):
             target_columns = [target_columns]
 
-        return set(feature_columns) <= set(df.columns) and set(target_columns) <= set(
-            df.columns
-        )
+        condition = set(target_columns) <= set(df.columns)
+
+        if self._feature_columns is not None:
+            feature_columns = self._feature_columns
+            if isinstance(feature_columns, str):
+                feature_columns = [feature_columns]
+
+            condition = condition and set(feature_columns) <= set(df.columns)
+
+        return condition
+
+    def _get_X_y(
+        self,
+        df: pandas.DataFrame,
+        return_y: bool = True,
+    ) -> Tuple[
+        Union[pandas.DataFrame, pandas.Series],
+        Optional[Union[pandas.DataFrame, pandas.Series]],
+    ]:
+        if self._feature_columns:
+            feature_columns = self._feature_columns
+        else:
+            target_columns = self._target_columns
+            if isinstance(target_columns, str):
+                target_columns = [target_columns]
+
+            feature_columns = list(set(df.columns) - set(target_columns))
+
+        X = df[feature_columns]
+        y = df[self._target_columns] if return_y else None
+        return X, y
 
     def _fit_transform(self, df: pandas.DataFrame, verbose: bool) -> pandas.DataFrame:
-        X = df[self._feature_columns]
-        y = df[self._target_columns]
+        X, y = self._get_X_y(df)
         self._estimator.fit(X, y)
         self.is_fitted = True
         return self._transform(df, verbose)
 
     def _transform(self, df: pandas.DataFrame, verbose: bool) -> pandas.DataFrame:
-        X = df[self._feature_columns]
+        X, _ = self._get_X_y(df, return_y=False)
         output = self._estimator.predict(X)
 
         if output.ndim == 1:
@@ -163,5 +187,7 @@ class SklearnTransformer(Stage):
 
         if self._drop:
             inter_df = inter_df.drop(self._feature_columns, axis=1)
+
+        return inter_df
 
         return inter_df
