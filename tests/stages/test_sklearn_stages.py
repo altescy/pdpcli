@@ -1,5 +1,6 @@
 import numpy
 import pandas
+from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
@@ -60,4 +61,26 @@ def test_sklearn_transformer_with_tfidf_vectorizer() -> None:
         "tfidf_second",
         "tfidf_sentence",
         "tfidf_this",
+    ]
+
+
+def test_sklearn_transformer_without_feature_columns() -> None:
+    df = pandas.DataFrame(data=numpy.random.normal(size=(64, 32)))
+
+    stage = SklearnTransformer(
+        transformer=PCA(n_components=8),
+        output_columns="pca",
+    )
+    output = stage.apply(df)
+
+    assert len(output.columns) == 8
+    assert list(output.columns) == [
+        "pca_0",
+        "pca_1",
+        "pca_2",
+        "pca_3",
+        "pca_4",
+        "pca_5",
+        "pca_6",
+        "pca_7",
     ]

@@ -113,8 +113,8 @@ class SklearnTransformer(Stage):
     def __init__(
         self,
         transformer: TransformerMixin,
-        feature_columns: Union[str, List[str]],
         output_columns: Union[str, List[str]],
+        feature_columns: Optional[Union[str, List[str]]] = None,
         drop: bool = True,
     ) -> None:
         super().__init__()
@@ -124,20 +124,27 @@ class SklearnTransformer(Stage):
         self._drop = drop
 
     def _prec(self, df: pandas.DataFrame) -> bool:
+        if self._feature_columns is None:
+            return True
         feature_columns = self._feature_columns
         if isinstance(feature_columns, str):
             feature_columns = [feature_columns]
         return set(feature_columns) <= set(df.columns)
 
     def _fit_transform(self, df: pandas.DataFrame, verbose: bool) -> pandas.DataFrame:
-        X = df[self._feature_columns]
+        X = df[self._feature_columns] if self._feature_columns else df
         self._transformer.fit(X)
         self.is_fitted = True
         return self._transform(df, verbose)
 
     def _transform(self, df: pandas.DataFrame, verbose: bool) -> pandas.DataFrame:
-        X = df[self._feature_columns]
-        output = self._transformer.fit_transform(X)
+        if self._feature_columns:
+            feature_columns = self._feature_columns
+        else:
+            feature_columns = list(df.columns)
+
+        X = df[feature_columns]
+        output = self._transformer.transform(X)
 
         if output.ndim == 1:
             output = numpy.expand_dims(output, axis=1)
@@ -186,6 +193,6 @@ class SklearnTransformer(Stage):
         inter_df = pandas.concat([df, vec_df], axis=1)
 
         if self._drop:
-            inter_df = inter_df.drop(self._feature_columns, axis=1)
+            inter_df = inter_df.drop(feature_columns, axis=1)
 
         return inter_df
