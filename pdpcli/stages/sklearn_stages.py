@@ -71,7 +71,7 @@ class SklearnPredictor(Stage):
         output = self._estimator.predict(X)
 
         if output.ndim == 1:
-            output = numpy.expand_dims(output, axis=1)  # type: ignore
+            output = numpy.expand_dims(output, axis=1)
         elif output.ndim > 2:
             raise RuntimeError(
                 "# dim of prediction array must be less than or equal 2."
@@ -140,7 +140,7 @@ class SklearnTransformer(Stage):
         output = self._transformer.fit_transform(X)
 
         if output.ndim == 1:
-            output = numpy.expand_dims(output, axis=1)  # type: ignore
+            output = numpy.expand_dims(output, axis=1)
         elif output.ndim > 2:
             raise RuntimeError(
                 "# dim of transformed array must be less than or equal 2."
@@ -187,7 +187,5 @@ class SklearnTransformer(Stage):
 
         if self._drop:
             inter_df = inter_df.drop(self._feature_columns, axis=1)
-
-        return inter_df
 
         return inter_df
