@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pdpcli"
-version = "0.3.1"
+version = "0.4.0"
 description = "PdpCLI is a pandas DataFrame processing CLI tool which enables you to build a pandas pipeline from a configuration file."
 authors = ["altescy <altescy@fastmail.com>"]
 license = "MIT License"
