@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict
 
 import pdpipe
 
@@ -9,9 +9,7 @@ from pdpcli.stages.stage import Stage
 class Pipeline(pdpipe.PdPipeline):  # type: ignore
     def __init__(
         self,
-        stages: Union[List[Stage], Dict[str, Stage]],
+        stages: Dict[str, Stage],
         **kwargs: Any,
     ) -> None:
-        if isinstance(stages, dict):
-            stages = list(stages.values())
-        super().__init__(stages, **kwargs)
+        super().__init__(list(stages.values()), **kwargs)
