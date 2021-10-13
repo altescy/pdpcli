@@ -12,4 +12,4 @@ class Pipeline(pdpipe.PdPipeline):  # type: ignore
         stages: Dict[str, Stage],
         **kwargs: Any,
     ) -> None:
-        super().__init__(list(stages.values()), **kwargs)
+        super().__init__(stages=list(stages.values()), **kwargs)
