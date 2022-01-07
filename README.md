@@ -99,7 +99,7 @@ reader:
 ```
 Config files are interpreted by [OmegaConf](https://omegaconf.readthedocs.io/e), so `${env:...}` is interpolated by environment variables.
 
-Prepare yuor SQL file `query.sql` to fetch data from the database:
+Prepare your SQL file `query.sql` to fetch data from the database:
 ```sql
 select * from your_table limit 1000
 ```
